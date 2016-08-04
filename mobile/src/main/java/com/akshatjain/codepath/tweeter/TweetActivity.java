@@ -9,6 +9,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
+import com.akshatjain.codepath.tweeter.restclienttemplate.RestClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+
+import cz.msebera.android.httpclient.entity.mime.Header;
+
 public class TweetActivity extends AppCompatActivity {
 
     @Override
@@ -24,6 +32,20 @@ public class TweetActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        RestClient client = RestApplication.getRestClient();
+        client.getHomeTimeline(1, new JsonHttpResponseHandler() {
+            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                // Response is automatically parsed into a JSONArray
+                // json.getJSONObject(0).getLong("id");
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+
             }
         });
     }

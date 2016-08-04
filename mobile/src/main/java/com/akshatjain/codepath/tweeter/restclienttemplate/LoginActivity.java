@@ -1,10 +1,13 @@
 package com.akshatjain.codepath.tweeter.restclienttemplate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 import com.akshatjain.codepath.tweeter.R;
+import com.akshatjain.codepath.tweeter.TweetActivity;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 import com.codepath.oauth.OAuthLoginActivity;
 
@@ -28,15 +31,18 @@ public class LoginActivity extends OAuthLoginActionBarActivity<RestClient> {
 	// i.e Display application "homepage"
 	@Override
 	public void onLoginSuccess() {
-		// Intent i = new Intent(this, PhotosActivity.class);
-		// startActivity(i);
+		Toast.makeText(this,"Login success",Toast.LENGTH_LONG).show();
+		 Intent i = new Intent(this, TweetActivity.class);
+		 startActivity(i);
 	}
 
 	// OAuth authentication flow failed, handle the error
 	// i.e Display an error dialog or toast
 	@Override
 	public void onLoginFailure(Exception e) {
+		Toast.makeText(this,"Login failed.Please try again...",Toast.LENGTH_LONG).show();
 		e.printStackTrace();
+
 	}
 
 	// Click handler method for the button used to start OAuth flow
