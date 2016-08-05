@@ -5,10 +5,14 @@ import org.scribe.builder.api.FlickrApi;
 import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+
+
 
 /*
  * 
@@ -22,14 +26,14 @@ import com.loopj.android.http.RequestParams;
  * NOTE: You may want to rename this object based on the service i.e TwitterClient or FlickrClient
  * 
  */
-public class RestClient extends OAuthBaseClient {
+public class TwitterClient extends OAuthBaseClient {
 	public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class; // Change this
-	public static final String REST_URL = "http://api.twitter.com"; // Change this, base API URL
+	public static final String REST_URL = "https://api.twitter.com/1.1"; // Change this, base API URL
 	public static final String REST_CONSUMER_KEY = "XlG91SI3K6uowY2O7kwGvjFvE";       // Change this
 	public static final String REST_CONSUMER_SECRET = "6HpyPGNXM2xrOwEhLTNv7aOO3Yt5RmnxFjDBfuVgCaUpkT0Wsa"; // Change this
-	public static final String REST_CALLBACK_URL = "oauth://github.com"; // Change this (here and in manifest)
+	public static final String REST_CALLBACK_URL = "x-oauthflow-twitter://github.com"; // Change this (here and in manifest)
 
-	public RestClient(Context context) {
+	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
 
@@ -44,7 +48,9 @@ public class RestClient extends OAuthBaseClient {
 
 	public void getHomeTimeline(int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("statuses/home_timeline.json");
+		Log.d(Constants.TAG,"URL == " + apiUrl);
 		RequestParams params = new RequestParams();
+
 		params.put("page", String.valueOf(page));
 		client.get(apiUrl, params, handler);
 	}

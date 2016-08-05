@@ -1,4 +1,4 @@
-package com.akshatjain.codepath.tweeter.restclienttemplate;
+package com.akshatjain.codepath.tweeter.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,11 +7,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.akshatjain.codepath.tweeter.R;
-import com.akshatjain.codepath.tweeter.TweetActivity;
+import com.akshatjain.codepath.tweeter.restclienttemplate.TwitterClient;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
-import com.codepath.oauth.OAuthLoginActivity;
 
-public class LoginActivity extends OAuthLoginActionBarActivity<RestClient> {
+import org.scribe.model.Token;
+
+public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +32,13 @@ public class LoginActivity extends OAuthLoginActionBarActivity<RestClient> {
 	// i.e Display application "homepage"
 	@Override
 	public void onLoginSuccess() {
-		Toast.makeText(this,"Login success",Toast.LENGTH_LONG).show();
-		 Intent i = new Intent(this, TweetActivity.class);
-		 startActivity(i);
+
+		Token token = getClient().checkAccessToken();
+		Toast.makeText(this,"Login success  : " + token,Toast.LENGTH_LONG).show();
+		Intent i = new Intent(this, TweetActivity.class);
+		i.putExtra("Token",token);
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(i);
 	}
 
 	// OAuth authentication flow failed, handle the error
