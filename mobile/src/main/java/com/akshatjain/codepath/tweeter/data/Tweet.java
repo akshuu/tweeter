@@ -12,14 +12,8 @@ import java.util.ArrayList;
  */
 public class Tweet {
 
-    @SerializedName("profile_image_url_https")
-    String profileImage;
-
     @SerializedName("id")
     long id;
-
-    @SerializedName("screen_name")
-    String handle;
 
     @SerializedName("created_at")
     String created_at;
@@ -36,9 +30,7 @@ public class Tweet {
     @Override
     public String toString() {
         return "Tweet{" +
-                "profileImage='" + profileImage + '\'' +
                 ", id=" + id +
-                ", handle='" + handle + '\'' +
                 ", created_at='" + created_at + '\'' +
                 ", text='" + text + '\'' +
                 ", retweet_count=" + retweet_count +
@@ -58,6 +50,17 @@ public class Tweet {
     @SerializedName("favorite_count")
     private int favoriteCount;
 
+
+    public Tweet(long id, String created_at, String text, int retweet_count, boolean isFavorite, boolean isRetweeted, User userDetails, int favoriteCount) {
+        this.id = id;
+        this.created_at = created_at;
+        this.text = text;
+        this.retweet_count = retweet_count;
+        this.isFavorite = isFavorite;
+        this.isRetweeted = isRetweeted;
+        this.userDetails = userDetails;
+        this.favoriteCount = favoriteCount;
+    }
 
     public boolean isRetweeted() {
         return isRetweeted;
@@ -115,28 +118,12 @@ public class Tweet {
         this.created_at = created_at;
     }
 
-    public String getHandle() {
-        return handle;
-    }
-
-    public void setHandle(String handle) {
-        this.handle = handle;
-    }
-
     public long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
     }
 
 }

@@ -17,8 +17,11 @@
             android:value="RestClient.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="1" />
-
+            android:value="3" />
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="com.akshatjain.codepath.tweeter.model.UserModel,com.akshatjain.codepath.tweeter.model.TweetModel"/>
+            android:value="com.akshatjain.codepath.tweeter.model.UserModel,com.akshatjain.codepath.tweeter.model.TweetModel"/>
         <activity
             android:name=".activity.TweetActivity"
             android:label="@string/app_name"

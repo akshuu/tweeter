@@ -6,6 +6,8 @@ package com.akshatjain.codepath.tweeter.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +72,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         ImageView imgTweet = holder.imgTweet;
 
         txtUserName.setText(tweet.getUserDetails().getName());
-        txtTweet.setText(tweet.getText());
+        txtTweet.setText(Html.fromHtml(tweet.getText()));
+        txtTweet.setMovementMethod(LinkMovementMethod.getInstance());
+
         txtHandle.setText("@" + tweet.getUserDetails().getScreenName());
 
 

@@ -7,6 +7,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class User {
 
+    @SerializedName("id")
+    long id;
+
     @SerializedName("name")
     String name;
 
@@ -21,6 +24,16 @@ public class User {
 
     @SerializedName("profile_image_url_https")
     String profileImageUrl;
+
+    public User(long id, String name, int likes, String screenName, String description, String profileImageUrl) {
+        this.id = id;
+        this.name = name;
+        this.likes = likes;
+        this.screenName = screenName;
+        this.description = description;
+        this.profileImageUrl = profileImageUrl;
+    }
+
 
     public String getProfileImageUrl() {
         return profileImageUrl;
@@ -60,6 +73,14 @@ public class User {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override

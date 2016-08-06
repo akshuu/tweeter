@@ -19,6 +19,9 @@ import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.SpacesItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.TweetAdapter;
 import com.akshatjain.codepath.tweeter.data.Tweet;
+import com.akshatjain.codepath.tweeter.data.User;
+import com.akshatjain.codepath.tweeter.model.TweetModel;
+import com.akshatjain.codepath.tweeter.model.UserModel;
 import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
 import com.akshatjain.codepath.tweeter.restclienttemplate.TwitterClient;
 import com.akshatjain.codepath.tweeter.utils.Constants;
@@ -94,7 +97,6 @@ public class TweetActivity extends AppCompatActivity {
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         rvTweets.setHasFixedSize(true);
-//        rvTweets.addItemDecoration(new SpacesItemDecoration(16));
         rvTweets.addItemDecoration(new DividerItemDecoration(this));
 
         // use a linear layout manager
@@ -123,7 +125,24 @@ public class TweetActivity extends AppCompatActivity {
                             .fromJson(res, collectionType);
                     Log.d(Constants.TAG, "Tweet == " + lTweets.size());
                     for (int i = 0; i < lTweets.size(); i++) {
-                        Log.d(Constants.TAG, "Tweet == " + lTweets.get(i).toString());
+                        Log.d(Constants.TAG, "Saving Tweets to DB == " + lTweets.get(i).toString());
+                        Tweet tweet = lTweets.get(i);
+                        User user = tweet.getUserDetails();
+                        UserModel userModel = new UserModel(user.getId(),
+                                user.getName(),
+                                user.getLikes(),
+                                user.getScreenName(),
+                                user.getDescription(),
+                                user.getProfileImageUrl()
+                                );
+
+                        userModel.save();
+
+                        TweetModel tweetModel = new TweetModel(tweet.getId(),tweet.getCreated_at(),tweet.getText(),
+                                tweet.getRetweet_count(),tweet.isFavorite(),
+                                tweet.isRetweeted(),tweet.getFavoriteCount(),userModel);
+                        tweetModel.save();
+
                     }
                     if (isRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
@@ -156,12 +175,60 @@ public class TweetActivity extends AppCompatActivity {
                     if (isRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
+                    loadOfflineTweets();
                 }
 
             });
         }else{
             Toast.makeText(this,"No Internet connection. Please try again...",Toast.LENGTH_LONG).show();
+            loadOfflineTweets();
+            if (isRefresh) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
         }
+    }
+
+    private void loadOfflineTweets() {
+        Log.w(Constants.TAG, "loading offline tweets");
+            List<Tweet> lTweets = new ArrayList<>();
+            List<TweetModel> tweetModels = TweetModel.getAllTweets();
+            for(TweetModel model : tweetModels){
+                UserModel userModel = model.userModel;
+                User user = new User(userModel.remoteId,
+                        userModel.name,
+                        userModel.likes,
+                        userModel.screenName,
+                        userModel.description,
+                        userModel.profileImageUrl);
+
+                Tweet tweet = new Tweet(model.remoteId,
+                        model.created_at,
+                        model.text,
+                        model.retweet_count,
+                        model.isFavorite,
+                        model.isRetweeted,
+                        user,
+                        model.favoriteCount);
+                Log.w(Constants.TAG,"Saved tweet = " + tweet.toString());
+                lTweets.add(tweet);
+            }
+
+        mTweetList = new ArrayList<>();
+
+        Log.w(Constants.TAG,"MTAdapter = " + mTweetAdapter);
+        if(mTweetAdapter != null) {
+            int curSize = mTweetAdapter.getItemCount();
+            mTweetAdapter.notifyItemRangeRemoved(0, curSize);
+            mTweetList.addAll(lTweets);
+        }else{
+            mTweetList.addAll(lTweets);
+            mTweetAdapter = new TweetAdapter(mTweetList, TweetActivity.this);
+        }
+        rvTweets.setAdapter(mTweetAdapter);
+        Log.w(Constants.TAG, "total offline tweets : " + lTweets.size());
+
+        mTweetAdapter.notifyItemInserted(0);
+        rvTweets.scrollToPosition(0);
     }
 
 

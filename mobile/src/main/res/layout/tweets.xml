@@ -62,6 +62,7 @@
         android:layout_height="wrap_content"
         android:text="Tweet"
         android:id="@+id/txtTweet"
+        android:linksClickable="true"
         android:layout_below="@+id/txtName"
         android:layout_alignLeft="@+id/txtName"
         android:layout_alignParentRight="true"
