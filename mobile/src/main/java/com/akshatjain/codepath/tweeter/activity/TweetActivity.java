@@ -3,6 +3,7 @@ package com.akshatjain.codepath.tweeter.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import com.akshatjain.codepath.tweeter.adapter.SpacesItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.TweetAdapter;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.akshatjain.codepath.tweeter.data.User;
+import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
 import com.akshatjain.codepath.tweeter.model.TweetModel;
 import com.akshatjain.codepath.tweeter.model.UserModel;
 import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
@@ -41,7 +43,7 @@ import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 
-public class TweetActivity extends AppCompatActivity {
+public class TweetActivity extends AppCompatActivity implements ComposeFragment.OnTweetComposed{
 
     @BindView(R.id.tweets)
     RecyclerView rvTweets;
@@ -73,8 +75,13 @@ public class TweetActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                FragmentManager fm = getSupportFragmentManager();
+                ComposeFragment composeFragment = new ComposeFragment();
+                composeFragment.show(fm, "composeFragment");
+
+
             }
         });
 
@@ -209,6 +216,8 @@ public class TweetActivity extends AppCompatActivity {
                         model.isRetweeted,
                         user,
                         model.favoriteCount);
+
+
                 Log.w(Constants.TAG,"Saved tweet = " + tweet.toString());
                 lTweets.add(tweet);
             }
@@ -252,5 +261,10 @@ public class TweetActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTweetPosted() {
+
     }
 }

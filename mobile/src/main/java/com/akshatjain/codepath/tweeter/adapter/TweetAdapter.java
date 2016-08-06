@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.data.Tweet;
+import com.akshatjain.codepath.tweeter.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -72,7 +73,10 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         ImageView imgTweet = holder.imgTweet;
 
         txtUserName.setText(tweet.getUserDetails().getName());
-        txtTweet.setText(Html.fromHtml(tweet.getText()));
+
+        String formattedTweet = Utils.ParseTweet(tweet.getText());
+
+        txtTweet.setText(Html.fromHtml(formattedTweet));
         txtTweet.setMovementMethod(LinkMovementMethod.getInstance());
 
         txtHandle.setText("@" + tweet.getUserDetails().getScreenName());
