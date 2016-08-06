@@ -9,12 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -57,29 +59,59 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        Tweet tweets = tweetsList.get(position);
-        TextView txtHeadline = holder.txtName;
+        Tweet tweet = tweetsList.get(position);
+        TextView txtUserName = holder.txtName;
         ImageView thumbnail = holder.profilePic;
+        TextView txtHandle = holder.txtHandle;
+        TextView txtRetweetCnt = holder.txtRetweetCnt;
+        TextView txtLikeCnt = holder.txtLikeCnt;
+        TextView txtTweet = holder.txtTweet;
+        TextView txtTime = holder.txtTime;
+        ImageView imgTweet = holder.imgTweet;
 
-//        txtHeadline.setText(tweets.headline.main);
-//        MediaImage thumbnailImage = tweets.getThumbnail();
-//        thumbnail.setImageDrawable(null);
-//        if(thumbnailImage != null){
-//            String imageUrl = Constants.NYTIMES_SITE_URL + thumbnailImage.url;
-//            Glide.with(mContext)
-//                    .load(imageUrl)
-//                    .centerCrop()
-//                    .dontAnimate()
-//                    .override(300,300)
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .placeholder(R.drawable.news_icon)
-//                    .into(profilePic);
-//        }else{
-//            thumbnail.setImageResource(R.drawable.news_icon);
-//
-//        }
+        txtUserName.setText(tweet.getUserDetails().getName());
+        txtTweet.setText(tweet.getText());
+        txtHandle.setText("@" + tweet.getUserDetails().getScreenName());
 
-        holder.itemView.setTag(tweets);
+
+        if(tweet.isFavorite()){
+            holder.btnLike.setBackgroundResource(R.drawable.like_fav);
+        }else{
+            holder.btnLike.setBackgroundResource(R.drawable.like);
+        }
+
+        if(tweet.isRetweeted()){
+            holder.btnRetweet.setBackgroundResource(R.drawable.retweeted);
+        }else{
+            holder.btnRetweet.setBackgroundResource(R.drawable.retweet);
+        }
+        if(tweet.getFavoriteCount() > 0) {
+            txtLikeCnt.setText(tweet.getFavoriteCount() + "");
+            txtLikeCnt.setVisibility(View.VISIBLE);
+        }else{
+            txtLikeCnt.setVisibility(View.GONE);
+        }
+
+        if(tweet.getRetweet_count() > 0) {
+            txtRetweetCnt.setVisibility(View.VISIBLE);
+            txtRetweetCnt.setText(tweet.getRetweet_count() + "");
+        }else{
+            txtRetweetCnt.setVisibility(View.GONE);
+        }
+
+        if(tweet.getUserDetails().getProfileImageUrl() != null){
+            Glide.with(mContext)
+                    .load(tweet.getUserDetails().getProfileImageUrl())
+                    .fitCenter()
+                    .dontAnimate()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.twitter_logo)
+                    .into(thumbnail);
+        }else{
+            thumbnail.setImageResource(R.drawable.twitter_logo);
+        }
+
+        holder.itemView.setTag(tweet);
     }
 
     @Override
@@ -112,6 +144,12 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
 
         @BindView(R.id.imageView)
         public ImageView profilePic;
+
+        @BindView(R.id.btnLike)
+        public ImageButton btnLike;
+
+        @BindView(R.id.btnRetweet)
+        public ImageButton btnRetweet;
 
         public Holder(View itemView) {
             super(itemView);

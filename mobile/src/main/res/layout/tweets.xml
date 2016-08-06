@@ -2,13 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content">
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/imageView"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitCenter"
         android:background="@android:drawable/ic_media_play"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -20,25 +23,35 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Name"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:textColor="@android:color/black"
         android:id="@+id/txtName"
-        android:layout_alignBottom="@+id/imageView"
         android:layout_toRightOf="@+id/imageView"
-        android:layout_toEndOf="@+id/imageView"/>
+        android:layout_toEndOf="@+id/imageView"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Handle"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
         android:id="@+id/txtHandle"
-        android:layout_alignBottom="@+id/txtName"
-        android:layout_centerHorizontal="true"/>
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/txtName"
+        android:layout_toEndOf="@+id/txtName"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Time"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
         android:id="@+id/txtTime"
         android:layout_alignBottom="@+id/txtHandle"
         android:layout_alignParentRight="true"
@@ -50,7 +63,7 @@
         android:text="Tweet"
         android:id="@+id/txtTweet"
         android:layout_below="@+id/txtName"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_alignLeft="@+id/txtName"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
 
@@ -61,6 +74,8 @@
         android:layout_below="@+id/txtTweet"
         android:layout_alignLeft="@+id/txtTweet"
         android:layout_alignStart="@+id/txtTweet"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
 
@@ -96,10 +111,12 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
         android:id="@+id/txtRetweetCnt"
+        android:visibility="gone"
+        android:layout_marginLeft="5dp"
         android:layout_alignBottom="@+id/btnRetweet"
         android:layout_alignTop="@+id/imgTweet"
-        android:layout_toRightOf="@+id/txtHandle"
-        android:layout_toEndOf="@+id/txtHandle"/>
+        android:layout_toRightOf="@+id/btnRetweet"
+        android:layout_toEndOf="@+id/btnRetweet"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -108,7 +125,8 @@
         android:text="Small Text"
         android:id="@+id/txtLikeCnt"
         android:layout_alignTop="@+id/imgTweet"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="5dp"
+        android:visibility="gone"
         android:layout_alignBottom="@+id/btnLike"
         android:layout_toRightOf="@+id/btnLike"
         android:layout_toEndOf="@+id/btnLike"/>

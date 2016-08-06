@@ -34,9 +34,8 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	public void onLoginSuccess() {
 
 		Token token = getClient().checkAccessToken();
-		Toast.makeText(this,"Login success  : " + token,Toast.LENGTH_LONG).show();
+		Toast.makeText(this,"Login success  : ",Toast.LENGTH_LONG).show();
 		Intent i = new Intent(this, TweetActivity.class);
-		i.putExtra("Token",token);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
 	}

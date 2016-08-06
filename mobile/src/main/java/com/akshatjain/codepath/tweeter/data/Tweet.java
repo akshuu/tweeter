@@ -33,12 +33,6 @@ public class Tweet {
     @SerializedName("favorited")
     boolean isFavorite;
 
-    @SerializedName("user")
-    User userDetails;
-
-    @SerializedName("favorite_count")
-    private int favoriteCount;
-
     @Override
     public String toString() {
         return "Tweet{" +
@@ -49,10 +43,100 @@ public class Tweet {
                 ", text='" + text + '\'' +
                 ", retweet_count=" + retweet_count +
                 ", isFavorite=" + isFavorite +
+                ", isRetweeted=" + isRetweeted +
                 ", userDetails=" + userDetails.toString() +
+                ", favoriteCount=" + favoriteCount +
                 '}';
     }
 
+    @SerializedName("retweeted")
+    boolean isRetweeted;
 
+    @SerializedName("user")
+    User userDetails;
+
+    @SerializedName("favorite_count")
+    private int favoriteCount;
+
+
+    public boolean isRetweeted() {
+        return isRetweeted;
+    }
+
+    public void setRetweeted(boolean retweeted) {
+        isRetweeted = retweeted;
+    }
+
+    public int getFavoriteCount() {
+        return favoriteCount;
+    }
+
+    public void setFavoriteCount(int favoriteCount) {
+        this.favoriteCount = favoriteCount;
+    }
+
+    public User getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(User userDetails) {
+        this.userDetails = userDetails;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public int getRetweet_count() {
+        return retweet_count;
+    }
+
+    public void setRetweet_count(int retweet_count) {
+        this.retweet_count = retweet_count;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getHandle() {
+        return handle;
+    }
+
+    public void setHandle(String handle) {
+        this.handle = handle;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 
 }

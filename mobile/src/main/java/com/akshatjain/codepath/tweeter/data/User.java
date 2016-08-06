@@ -13,8 +13,54 @@ public class User {
     @SerializedName("favourites_count")
     int likes;
 
+    @SerializedName("screen_name")
+    String screenName;
+
     @SerializedName("description")
     String description;
+
+    @SerializedName("profile_image_url_https")
+    String profileImageUrl;
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getScreenName() {
+        return screenName;
+    }
+
+    public void setScreenName(String screenName) {
+        this.screenName = screenName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
     public String toString() {
@@ -22,6 +68,7 @@ public class User {
                 "name='" + name + '\'' +
                 ", likes=" + likes +
                 ", description='" + description + '\'' +
+                ", screen name='" + screenName +'\'' +
                 '}';
     }
 }
