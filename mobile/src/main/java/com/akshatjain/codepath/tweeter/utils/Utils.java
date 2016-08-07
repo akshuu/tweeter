@@ -77,7 +77,62 @@ public class Utils {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        String consiseFormat = getMoreConsiseString(relativeDate);
+        return consiseFormat;
+    }
 
-        return relativeDate;
+    private static String getMoreConsiseString(String relativeDate) {
+        String returnDate = "";
+        if(relativeDate == null)
+            return "";
+
+        int indx = relativeDate.indexOf(" ago");
+        if(indx != -1)
+            relativeDate = relativeDate.substring(0,indx);
+
+        if(relativeDate.contains("second")){
+            indx = relativeDate.indexOf("second");
+            int value = 1;
+
+            try{
+                value = Integer.parseInt(relativeDate.substring(0,indx-1));
+            }catch (NumberFormatException nfe){}
+            returnDate = value + "s";
+        }else  if(relativeDate.contains("minute")){
+            indx = relativeDate.indexOf("minute");
+            int value = 1;
+
+            try{
+                value = Integer.parseInt(relativeDate.substring(0,indx-1));
+            }catch (NumberFormatException nfe){}
+            returnDate = value + "m";
+        }else  if(relativeDate.contains("hour")){
+            indx = relativeDate.indexOf("hour");
+            int value = 1;
+
+            try{
+                value = Integer.parseInt(relativeDate.substring(0,indx-1));
+            }catch (NumberFormatException nfe){}
+            returnDate = value + "h";
+        } else if(relativeDate.contains("day")){
+            indx = relativeDate.indexOf("day");
+            int value = 1;
+
+            try{
+                value = Integer.parseInt(relativeDate.substring(0,indx-1));
+            }catch (NumberFormatException nfe){}
+            returnDate = value + "d";
+        }  else if(relativeDate.contains("year")){
+            indx = relativeDate.indexOf("year");
+            int value = 1;
+
+            try{
+                value = Integer.parseInt(relativeDate.substring(0,indx-1));
+            }catch (NumberFormatException nfe){}
+            returnDate = value + "y";
+        }
+
+        Log.d(Constants.TAG,"Consise date ==" + returnDate);
+        return returnDate;
     }
 }
