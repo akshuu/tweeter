@@ -4,9 +4,13 @@ package com.akshatjain.codepath.tweeter.adapter;
  * Created by akshatjain on 8/3/16.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -19,8 +23,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akshatjain.codepath.tweeter.R;
+import com.akshatjain.codepath.tweeter.activity.TweetActivity;
 import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
+import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
 import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.akshatjain.codepath.tweeter.utils.Utils;
 import com.bumptech.glide.Glide;
@@ -37,8 +43,8 @@ import butterknife.ButterKnife;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
 
 
-    List<Tweet> tweetsList;
-    private Context mContext;
+    public List<Tweet> tweetsList;
+    public Context mContext;
 
     public TweetAdapter(List<Tweet> tweetsList, Context mContext) {
         this.tweetsList = tweetsList;
@@ -151,6 +157,16 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         return tweetsList.size();
     }
 
+    private static OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+
+    // Define the method that allows the parent activity or fragment to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -184,17 +200,26 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         @BindView(R.id.btnRetweet)
         public ImageButton btnRetweet;
 
-        public Holder(View itemView) {
+        @BindView(R.id.btnReply)
+        public ImageButton btnReply;
+
+        public Holder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
 
+            btnReply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onItemClick(itemView, getLayoutPosition());
+                }
+            });
             itemView.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
-            int position = getLayoutPosition(); // gets item position
             Tweet tweet = (Tweet) v.getTag();
             if(tweet.getEntities() != null && tweet.getEntities().getUrls() != null && tweet.getEntities().getUrls().size() > 0)
             {

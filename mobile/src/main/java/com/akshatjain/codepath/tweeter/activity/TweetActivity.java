@@ -48,7 +48,7 @@ import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 
-public class TweetActivity extends AppCompatActivity implements ComposeFragment.OnTweetComposed{
+public class TweetActivity extends AppCompatActivity implements ComposeFragment.OnTweetComposed, TweetAdapter.OnItemClickListener {
 
     @BindView(R.id.tweets)
     RecyclerView rvTweets;
@@ -83,9 +83,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                FragmentManager fm = getSupportFragmentManager();
-                ComposeFragment composeFragment = new ComposeFragment();
-                composeFragment.show(fm, "composeFragment");
+                showComposeFragment();
 
 
             }
@@ -131,6 +129,12 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         twitterClient = RestApplication.getRestClient();
 
         fetchTweets(false);
+    }
+
+    public void showComposeFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        ComposeFragment composeFragment = new ComposeFragment();
+        composeFragment.show(fm, "composeFragment");
     }
 
     private void fetchTweets(final boolean isRefresh) {
@@ -197,6 +201,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
                     if(mTweetAdapter == null) {
                         Log.d(Constants.TAG, "new Adapter == " + mTweetList.size());
                         mTweetAdapter = new TweetAdapter(mTweetList, TweetActivity.this);
+                        mTweetAdapter.setOnItemClickListener(TweetActivity.this);
                         rvTweets.setAdapter(mTweetAdapter);
 
                         mTweetAdapter.notifyItemInserted(0);
@@ -319,5 +324,18 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
     @Override
     public void onTweetPosted() {
             fetchTweets(true);
+    }
+
+    @Override
+    public void onItemClick(View itemView, int position) {
+        FragmentManager fm = getSupportFragmentManager();
+        ComposeFragment composeFragment = new ComposeFragment();
+        Bundle arg = new Bundle();
+        Tweet tweet = mTweetList.get(position);
+        Log.d(Constants.TAG,"Handle == " + tweet.getUserDetails().getScreenName());
+        arg.putString("Name",tweet.getUserDetails().getScreenName());
+        arg.putLong("id",tweet.getId());
+        composeFragment.setArguments(arg);
+        composeFragment.show(fm, "composeFragment");
     }
 }

@@ -58,6 +58,7 @@ public class ComposeFragment extends DialogFragment {
     @BindView(R.id.txtCount)
     TextView txtCount;
 
+    private long replyId;
     private TwitterClient twitterClient;
 
     private int MAX_CHARS = 140;
@@ -69,8 +70,6 @@ public class ComposeFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        getActivity().requestWindowFeature(Window.FEATURE_ACTION_BAR);
-
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Material_NoActionBar_Fullscreen);
     }
 
@@ -81,6 +80,7 @@ public class ComposeFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_compose, container, false);
         ButterKnife.bind(this, view);
 
+        replyId = -1;
         twitterClient = RestApplication.getRestClient();
         imgCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +114,16 @@ public class ComposeFragment extends DialogFragment {
             }
         });
 
+        Bundle args = getArguments();
+        if(args.containsKey("Name")){
+            txtTweet.setText("@" + args.getString("Name")+" ");
+            txtTweet.setSelection(args.getString("Name").length()+2);
+            btnTweet.setText("Reply");
+            replyId = args.getLong("id");
+        }else{
+            btnTweet.setText("Tweet");
+        }
+
         btnTweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,27 +135,26 @@ public class ComposeFragment extends DialogFragment {
 
                 if (Utils.isNetworkAvailable(getActivity())) {
                     String tweet = txtTweet.getText().toString();
-                    twitterClient.postNewTweet(tweet, new TextHttpResponseHandler() {
+                        twitterClient.postNewTweet(tweet, replyId, new TextHttpResponseHandler() {
 
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Log.d(Constants.TAG, "Failed Response code== " + statusCode + ", string = " + responseString);
-                            Toast.makeText(getActivity(), "Error posting tweet. Please try again..." + statusCode, Toast.LENGTH_LONG).show();
-                            return;
-                        }
-
-
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, String res) {
-                            Log.d(Constants.TAG, "Success Response code== " + statusCode + ", string = " + res);
-                            if (mListener != null) {
-                                mListener.onTweetPosted();
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                Log.d(Constants.TAG, "Failed Response code== " + statusCode + ", string = " + responseString);
+                                Toast.makeText(getActivity(), "Error posting tweet. Please try again..." + statusCode, Toast.LENGTH_LONG).show();
+                                return;
                             }
-                            dismiss();
-                        }
 
-                    });
 
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, String res) {
+                                Log.d(Constants.TAG, "Success Response code== " + statusCode + ", string = " + res);
+                                if (mListener != null) {
+                                    mListener.onTweetPosted();
+                                }
+                                dismiss();
+                            }
+
+                        });
                 } else {
                     Toast.makeText(getActivity(), "No Internet connection. Please try again...", Toast.LENGTH_LONG).show();
                 }
