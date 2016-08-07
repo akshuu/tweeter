@@ -39,11 +39,14 @@ public class TweetModel extends Model {
     @Column(name = "user", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
     public UserModel userModel;
 
+    @Column(name = "entities", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    public EntitiesModel entitiesModel;
+
     public TweetModel() {
     }
 
-    public TweetModel(long id, String created_at, String text, int retweet_count, boolean isFavorite, boolean isRetweeted, int favoriteCount,UserModel userModel) {
-        this.remoteId = id;
+    public TweetModel(long remoteId, String created_at, String text, int retweet_count, boolean isFavorite, boolean isRetweeted, int favoriteCount, UserModel userModel, EntitiesModel entitiesModel) {
+        this.remoteId = remoteId;
         this.created_at = created_at;
         this.text = text;
         this.retweet_count = retweet_count;
@@ -51,6 +54,7 @@ public class TweetModel extends Model {
         this.isRetweeted = isRetweeted;
         this.favoriteCount = favoriteCount;
         this.userModel = userModel;
+        this.entitiesModel = entitiesModel;
     }
 
     public static List<TweetModel> getAllTweets() {

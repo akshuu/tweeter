@@ -3,8 +3,12 @@ package com.akshatjain.codepath.tweeter.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.format.DateUtils;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +24,7 @@ public class Utils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-    public static String ParseTweet(String rawTweet)
+    public static String ParseTweet(String rawTweet, String url)
     {
         String regex = "(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"; // matches <http://google.com>
 
@@ -40,7 +44,7 @@ public class Utils {
             for (int i = 0; i < totalMatch; i++) {
                 String match = matcherTweet.group(i);
                 Log.d(Constants.TAG,"Tweet m = " + match);
-                formattedTweet = matcherTweet.replaceAll("<a href='" + match + "'>" + match + "</a>");
+                formattedTweet = matcherTweet.replaceAll("<a href='" + (url == null ? match : url)  + "'>" + match + "</a>");
             }
         }
        // String formattedTweet = matcherTweet.replaceAll("<a href='" + matcherTweet.toString() + "'>" + matcherTweet.toString() + "</a>");
@@ -58,5 +62,22 @@ public class Utils {
 //        });
         Log.d(Constants.TAG,"Tweet == " + formattedTweet);
         return formattedTweet;
+    }
+
+    public static String getRelativeTimeAgo(String rawJsonDate) {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        sf.setLenient(true);
+
+        String relativeDate = "";
+        try {
+            long dateMillis = sf.parse(rawJsonDate).getTime();
+            relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return relativeDate;
     }
 }

@@ -19,9 +19,13 @@ import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.SpacesItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.TweetAdapter;
+import com.akshatjain.codepath.tweeter.data.Entities;
+import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.akshatjain.codepath.tweeter.data.User;
 import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
+import com.akshatjain.codepath.tweeter.model.EntitiesModel;
+import com.akshatjain.codepath.tweeter.model.MediaModel;
 import com.akshatjain.codepath.tweeter.model.TweetModel;
 import com.akshatjain.codepath.tweeter.model.UserModel;
 import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
@@ -145,9 +149,26 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
                         userModel.save();
 
+                        EntitiesModel entitiesModel = null;
+                        Log.d(Constants.TAG,"SAving entities : " + tweet.getEntities());
+                        if(tweet.getEntities() != null) {
+                            List<Media> mediasList = tweet.getEntities().getMedias();
+                            if (mediasList != null) {
+                                for (Media media : mediasList) {
+                                    MediaModel mediaModel = new MediaModel(media.getId(), media.getMediaUrl());
+                                    mediaModel.save();
+                                    entitiesModel = new EntitiesModel(mediaModel);
+                                    Log.d(Constants.TAG,"calling save on entities : " + entitiesModel);
+                                    entitiesModel.save();
+
+                                }
+                            }
+                        }
+
+
                         TweetModel tweetModel = new TweetModel(tweet.getId(),tweet.getCreated_at(),tweet.getText(),
                                 tweet.getRetweet_count(),tweet.isFavorite(),
-                                tweet.isRetweeted(),tweet.getFavoriteCount(),userModel);
+                                tweet.isRetweeted(),tweet.getFavoriteCount(),userModel,entitiesModel );
                         tweetModel.save();
 
                     }
@@ -208,6 +229,17 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
                         userModel.description,
                         userModel.profileImageUrl);
 
+                EntitiesModel entitiesModel = model.entitiesModel;
+                MediaModel mediaModel;
+
+                Entities entities = null;
+                if(entitiesModel != null){
+                    mediaModel = entitiesModel.mediaModel;
+                    Media media = new Media( mediaModel.remoteId,mediaModel.mediaURL,null);
+                    List<Media> lMedia = new ArrayList<>();
+                    lMedia.add(media);
+                    entities = new Entities(lMedia);
+                }
                 Tweet tweet = new Tweet(model.remoteId,
                         model.created_at,
                         model.text,
@@ -215,7 +247,9 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
                         model.isFavorite,
                         model.isRetweeted,
                         user,
-                        model.favoriteCount);
+                        model.favoriteCount,
+                        entities
+                        );
 
 
                 Log.w(Constants.TAG,"Saved tweet = " + tweet.toString());
@@ -265,6 +299,6 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
     @Override
     public void onTweetPosted() {
-
+            fetchTweets(false);
     }
 }

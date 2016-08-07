@@ -98,6 +98,13 @@ public class ComposeFragment extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int tweetCnt = MAX_CHARS - (start + count);
+                if(tweetCnt < 0){
+                    txtCount.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                    btnTweet.setEnabled(false);
+                }else{
+                    txtCount.setTextColor(getResources().getColor(android.R.color.black));
+                    btnTweet.setEnabled(true);
+                }
                 txtCount.setText("" + tweetCnt);
             }
 
@@ -115,6 +122,7 @@ public class ComposeFragment extends DialogFragment {
                     Toast.makeText(getActivity(), "Please enter something to tweet", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 if (Utils.isNetworkAvailable(getActivity())) {
                     String tweet = txtTweet.getText().toString();
                     twitterClient.postNewTweet(tweet, new TextHttpResponseHandler() {

@@ -5,9 +5,12 @@ package com.akshatjain.codepath.tweeter.adapter;
  */
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akshatjain.codepath.tweeter.R;
+import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
+import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.akshatjain.codepath.tweeter.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -32,7 +37,7 @@ import butterknife.ButterKnife;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
 
 
-    private List<Tweet> tweetsList;
+    List<Tweet> tweetsList;
     private Context mContext;
 
     public TweetAdapter(List<Tweet> tweetsList, Context mContext) {
@@ -46,6 +51,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         // Required to clear image when the view is recycled
         // See  : https://github.com/bumptech/glide/issues/710
         Glide.clear(holder.profilePic);
+        Glide.clear(holder.imgTweet);
     }
 
     @Override
@@ -72,9 +78,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         TextView txtTime = holder.txtTime;
         ImageView imgTweet = holder.imgTweet;
 
+        txtTime.setText(Utils.getRelativeTimeAgo(tweet.getCreated_at()));
         txtUserName.setText(tweet.getUserDetails().getName());
 
-        String formattedTweet = Utils.ParseTweet(tweet.getText());
+        String formattedTweet = tweet.getText();
+        if(tweet.getEntities() != null && tweet.getEntities().getUrls() != null && tweet.getEntities().getUrls().size() != 0) {
+            String url = tweet.getEntities().getUrls().get(0).url;
+            formattedTweet = Utils.ParseTweet(tweet.getText(),url);
+        }else{
+            formattedTweet = Utils.ParseTweet(tweet.getText(),null);
+        }
+
 
         txtTweet.setText(Html.fromHtml(formattedTweet));
         txtTweet.setMovementMethod(LinkMovementMethod.getInstance());
@@ -119,6 +133,16 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
             thumbnail.setImageResource(R.drawable.twitter_logo);
         }
 
+        if(tweet.getEntities() != null && tweet.getEntities().getMedias() != null){
+            String url = tweet.getEntities().getMedias().get(0).getMediaUrl();
+            Glide.with(mContext)
+                    .load(url)
+                    .fitCenter()
+                    .dontAnimate()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(imgTweet);
+        }
+
         holder.itemView.setTag(tweet);
     }
 
@@ -127,7 +151,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         return tweetsList.size();
     }
 
-    public static class Holder extends RecyclerView.ViewHolder{
+
+    public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.txtName)
         public TextView txtName;
@@ -162,6 +187,25 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
         public Holder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
+            itemView.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition(); // gets item position
+            Tweet tweet = (Tweet) v.getTag();
+            if(tweet.getEntities() != null && tweet.getEntities().getUrls() != null && tweet.getEntities().getUrls().size() > 0)
+            {
+                String url = tweet.getEntities().getUrls().get(0).url;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                v.getContext().startActivity(i);
+                Log.d(Constants.TAG," URL with this == " + url);
+            }else{
+                Log.d(Constants.TAG,"No URL with this ");
+            }
         }
     }
 }
