@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
+import com.akshatjain.codepath.tweeter.adapter.EndlessRecyclerViewScrollListener;
 import com.akshatjain.codepath.tweeter.adapter.SpacesItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.TweetAdapter;
 import com.akshatjain.codepath.tweeter.data.Entities;
@@ -67,6 +68,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
     ArrayList<Tweet> mTweetList = new ArrayList<>();
     TweetAdapter mTweetAdapter;
+    int mPage =0 ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +116,18 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         mLayoutManager = new LinearLayoutManager(this);
         rvTweets.setLayoutManager(mLayoutManager);
 
+        rvTweets.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                Log.d(Constants.TAG, "page ==" + page);
+                mPage = page ;
+                fetchTweets(false);
+            }
+        });
+
+
         twitterClient = RestApplication.getRestClient();
 
         fetchTweets(false);
@@ -123,7 +137,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
         if(Utils.isNetworkAvailable(this)) {
 
-            twitterClient.getHomeTimeline(0, new TextHttpResponseHandler() {
+            twitterClient.getHomeTimeline(mPage, new TextHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String res) {
@@ -174,9 +188,11 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
                     }
                     if (isRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
+                        int curSize = mTweetAdapter.getItemCount();
+                        mTweetList.clear();
+                        mTweetAdapter.notifyItemRangeRemoved(0, curSize);
                     }
 
-                    int size = mTweetList.size();
                     mTweetList.addAll(lTweets);
                     if(mTweetAdapter == null) {
                         Log.d(Constants.TAG, "new Adapter == " + mTweetList.size());
@@ -188,8 +204,11 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
                     }else{
                         int curSize = mTweetAdapter.getItemCount();
                         Log.d(Constants.TAG, "updating items in range == " + curSize + ", " + lTweets.size());
-                        mTweetAdapter.notifyItemRangeInserted(curSize,lTweets.size());
-
+                        if(isRefresh){
+                            mTweetAdapter.notifyItemRangeInserted(0,lTweets.size());
+                        }else {
+                            mTweetAdapter.notifyItemRangeInserted(curSize, lTweets.size());
+                        }
                     }
 
                 }
@@ -299,6 +318,6 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
     @Override
     public void onTweetPosted() {
-            fetchTweets(false);
+            fetchTweets(true);
     }
 }

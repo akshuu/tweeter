@@ -28,22 +28,17 @@ public class Utils {
     {
         String regex = "(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"; // matches <http://google.com>
 
-        Log.d(Constants.TAG,"Raw Tweet == " + rawTweet);
-//        Pattern link = Pattern.compile("http(s)?:\\/\\/([\\w+?.\\w+])+([a-zA-Z0-9\\~!\\@#;\\$\\%\\^\\&*()_-\\=+\\/\\?.:\\;\\'\\,]*)?");
         Pattern link = Pattern.compile(regex);
         Pattern screenName = Pattern.compile("\\w+");
         Pattern hashTag = Pattern.compile("#\\w+");
 
         Matcher matcherTweet = link.matcher(rawTweet);
-        Log.d(Constants.TAG,"Tweet match? == " + matcherTweet.find());
         String formattedTweet = rawTweet;
         if(matcherTweet.find()) {
             int totalMatch = matcherTweet.groupCount();
-            Log.d(Constants.TAG,"Tweet matchcount? == " + totalMatch);
 
             for (int i = 0; i < totalMatch; i++) {
                 String match = matcherTweet.group(i);
-                Log.d(Constants.TAG,"Tweet m = " + match);
                 formattedTweet = matcherTweet.replaceAll("<a href='" + (url == null ? match : url)  + "'>" + match + "</a>");
             }
         }
@@ -132,7 +127,6 @@ public class Utils {
             returnDate = value + "y";
         }
 
-        Log.d(Constants.TAG,"Consise date ==" + returnDate);
         return returnDate;
     }
 }
