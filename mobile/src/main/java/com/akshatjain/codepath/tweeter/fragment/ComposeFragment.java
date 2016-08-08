@@ -115,7 +115,7 @@ public class ComposeFragment extends DialogFragment {
         });
 
         Bundle args = getArguments();
-        if(args.containsKey("Name")){
+        if(args != null && args.containsKey("Name")){
             txtTweet.setText("@" + args.getString("Name")+" ");
             txtTweet.setSelection(args.getString("Name").length()+2);
             btnTweet.setText("Reply");

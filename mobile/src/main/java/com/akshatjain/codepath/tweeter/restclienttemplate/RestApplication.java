@@ -1,6 +1,9 @@
 package com.akshatjain.codepath.tweeter.restclienttemplate;
 
 import android.content.Context;
+import android.support.multidex.MultiDexApplication;
+
+import com.activeandroid.ActiveAndroid;
 
 /*
  * This is the Android application itself and is used to configure various settings
@@ -11,13 +14,20 @@ import android.content.Context;
  *     // use client to send requests to API
  *
  */
-public class RestApplication extends com.activeandroid.app.Application {
+public class RestApplication extends MultiDexApplication{
 	private static Context context;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		RestApplication.context = this;
+		ActiveAndroid.initialize(this);
+	}
+
+	@Override
+	public void onTerminate() {
+		super.onTerminate();
+		ActiveAndroid.dispose();
 	}
 
 	public static TwitterClient getRestClient() {

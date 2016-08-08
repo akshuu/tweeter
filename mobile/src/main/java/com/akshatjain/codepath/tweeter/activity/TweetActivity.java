@@ -33,6 +33,7 @@ import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
 import com.akshatjain.codepath.tweeter.restclienttemplate.TwitterClient;
 import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.akshatjain.codepath.tweeter.utils.Utils;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -128,6 +129,8 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
         twitterClient = RestApplication.getRestClient();
 
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Log.d(Constants.TAG,"FCM Token == " + token);
         fetchTweets(false);
     }
 
