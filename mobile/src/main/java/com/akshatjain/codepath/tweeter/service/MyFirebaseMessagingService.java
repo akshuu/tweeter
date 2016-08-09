@@ -1,17 +1,29 @@
 package com.akshatjain.codepath.tweeter.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.activity.TweetActivity;
 import com.akshatjain.codepath.tweeter.utils.Constants;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -57,7 +69,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
         sendNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
+
+        buildWearableOnlyNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody(),Constants.WATCH_ONLY_PATH);
     }
+
     // [END receive_message]
 
     /**
@@ -69,8 +84,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this, TweetActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
+        // Create the action
+        NotificationCompat.Action action =
+                new NotificationCompat.Action.Builder(R.drawable.twitter_logo,
+                        "Tweetr", pendingIntent)
+                        .build();
+
+
+        Notification notificationBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.twitter_logo)
+                        .setContentTitle(title)
+                        .setContentText(messageBody)
+                        .extend(new NotificationCompat.WearableExtender().addAction(action))
+                        .build();
+
+
+        /*
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.twitter_logo)
@@ -78,11 +110,67 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent);*/
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(this);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder);
+    }
+
+    GoogleApiClient mGoogleApiClient;
+    private void buildWearableOnlyNotification(final String title, final String content, final String path) {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(path);
+                        putDataMapRequest.getDataMap().putString(Constants.KEY_CONTENT, content);
+                        putDataMapRequest.getDataMap().putString(Constants.KEY_TITLE, title);
+                        PutDataRequest request = putDataMapRequest.asPutDataRequest();
+                        request.setUrgent();
+                        Wearable.DataApi.putDataItem(mGoogleApiClient, request)
+                                .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+                                    @Override
+                                    public void onResult(DataApi.DataItemResult dataItemResult) {
+                                        if (!dataItemResult.getStatus().isSuccess()) {
+                                            Log.e(TAG, "buildWatchOnlyNotification(): Failed to set the data, "
+                                                    + "status: " + dataItemResult.getStatus().getStatusCode());
+                                        }
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                    }
+                })
+                .build();
+
+        mGoogleApiClient.connect();
+
+        if (mGoogleApiClient.isConnected()) {
+            Log.e(TAG, "buildWearableOnlyNotification():Google API Client connected....");
+        } else {
+            Log.e(TAG, "buildWearableOnlyNotification(): no Google API Client connection");
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mGoogleApiClient != null)
+            mGoogleApiClient.disconnect();
     }
 }
