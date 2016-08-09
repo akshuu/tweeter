@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.activity.TweetActivity;
+import com.akshatjain.codepath.tweeter.activity.TweetsDetailActivity;
 import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
@@ -31,6 +32,8 @@ import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.akshatjain.codepath.tweeter.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -223,11 +226,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
             Tweet tweet = (Tweet) v.getTag();
             if(tweet.getEntities() != null && tweet.getEntities().getUrls() != null && tweet.getEntities().getUrls().size() > 0)
             {
-                String url = tweet.getEntities().getUrls().get(0).url;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                v.getContext().startActivity(i);
-                Log.d(Constants.TAG," URL with this == " + url);
+//                String url = tweet.getEntities().getUrls().get(0).url;
+//                Intent i = new Intent(Intent.ACTION_VIEW);
+//                i.setData(Uri.parse(url));
+//                v.getContext().startActivity(i);
+//                Log.d(Constants.TAG," URL with this == " + url);
+                Intent intent = new Intent(v.getContext(), TweetsDetailActivity.class);
+                intent.putExtra("Tweet", Parcels.wrap(tweet));
+                v.getContext().startActivity(intent);
             }else{
                 Log.d(Constants.TAG,"No URL with this ");
             }

@@ -2,18 +2,24 @@ package com.akshatjain.codepath.tweeter.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.List;
 
 /**
  * Created by akshatjain on 8/6/16.
  */
+@Parcel
 public class Entities {
 
     @SerializedName("urls")
-    List<Url> urls;
+    public List<Url> urls;
 
     @SerializedName("media")
-    List<Media> medias;
+    public List<Media> medias;
+
+    public Entities() {
+    }
 
     public Entities(List<Media> medias) {
         this.medias = medias;

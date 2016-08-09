@@ -2,28 +2,34 @@ package com.akshatjain.codepath.tweeter.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 /**
  * Created by akshatjain on 8/4/16.
  */
+@Parcel
 public class User {
 
     @SerializedName("id")
-    long id;
+    public long id;
 
     @SerializedName("name")
-    String name;
+    public String name;
 
     @SerializedName("favourites_count")
-    int likes;
+    public int likes;
 
     @SerializedName("screen_name")
-    String screenName;
+    public String screenName;
 
     @SerializedName("description")
-    String description;
+    public String description;
 
     @SerializedName("profile_image_url_https")
-    String profileImageUrl;
+    public String profileImageUrl;
+
+    public User() {
+    }
 
     public User(long id, String name, int likes, String screenName, String description, String profileImageUrl) {
         this.id = id;

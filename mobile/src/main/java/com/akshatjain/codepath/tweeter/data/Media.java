@@ -2,18 +2,24 @@ package com.akshatjain.codepath.tweeter.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 /**
  * Created by akshatjain on 8/6/16.
  */
+@Parcel
 public class Media {
     @SerializedName("id")
-    long id;
+    public long id;
 
     @SerializedName("media_url_https")
-    String mediaUrl;
+    public String mediaUrl;
 
     @SerializedName("url")
-    String tweetURL;
+    public String tweetURL;
+
+    public Media() {
+    }
 
     public Media(long id, String mediaUrl, String tweetURL) {
         this.id = id;

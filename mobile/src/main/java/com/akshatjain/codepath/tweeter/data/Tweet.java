@@ -2,37 +2,43 @@ package com.akshatjain.codepath.tweeter.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 /**
  * Created by akshatjain on 8/4/16.
  */
-public class Tweet {
+@Parcel
+public class Tweet{
 
     @SerializedName("id")
-    long id;
+    public long id;
 
     @SerializedName("created_at")
-    String created_at;
+    public String created_at;
 
     @SerializedName("text")
-    String text;        // actual tweet
+    public String text;        // actual tweet
 
     @SerializedName("retweet_count")
-    int retweet_count;
+    public int retweet_count;
 
     @SerializedName("favorited")
-    boolean isFavorite;
+    public boolean isFavorite;
 
     @SerializedName("retweeted")
-    boolean isRetweeted;
+    public boolean isRetweeted;
 
     @SerializedName("user")
-    User userDetails;
+    public User userDetails;
 
     @SerializedName("favorite_count")
-    private int favoriteCount;
+    public  int favoriteCount;
 
     @SerializedName("entities")
-    Entities entities;
+    public Entities entities;
+
+    public Tweet() {
+    }
 
     public Tweet(long id, String created_at, String text, int retweet_count, boolean isFavorite, boolean isRetweeted, User userDetails, int favoriteCount) {
         this.id = id;
