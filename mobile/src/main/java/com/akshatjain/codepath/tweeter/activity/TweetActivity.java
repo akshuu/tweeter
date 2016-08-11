@@ -4,7 +4,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +30,8 @@ import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.akshatjain.codepath.tweeter.data.User;
 import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
+import com.akshatjain.codepath.tweeter.fragment.HomeTweetFragment;
+import com.akshatjain.codepath.tweeter.fragment.MentionTab;
 import com.akshatjain.codepath.tweeter.model.EntitiesModel;
 import com.akshatjain.codepath.tweeter.model.MediaModel;
 import com.akshatjain.codepath.tweeter.model.TweetModel;
@@ -47,6 +53,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 
 import org.scribe.model.Token;
 
@@ -60,11 +67,13 @@ import cz.msebera.android.httpclient.Header;
 
 
 public class TweetActivity extends AppCompatActivity implements ComposeFragment.OnTweetComposed,
-        TweetAdapter.OnItemClickListener ,
         DataApi.DataListener{
 
-    @BindView(R.id.tweets)
-    RecyclerView rvTweets;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+
+    @BindView(R.id.viewpager)
+    ViewPager viewPager;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -72,11 +81,15 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
+    /*
+    @BindView(R.id.tweets)
+    RecyclerView rvTweets;
+
     @BindView(R.id.swipeContainer)
     SwipeRefreshLayout swipeRefreshLayout;
 
     LinearLayoutManager mLayoutManager;
-
+    */
     private TwitterClient twitterClient;
 
     ArrayList<Tweet> mTweetList = new ArrayList<>();
@@ -92,6 +105,8 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
         setSupportActionBar(toolbar);
 
+        new DrawerBuilder().withActivity(this).build();
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +117,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
             }
         });
+/*
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -138,7 +154,11 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
                 fetchTweets(false);
             }
         });
+*/
 
+
+        setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
 
         twitterClient = RestApplication.getRestClient();
 
@@ -146,7 +166,14 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(Constants.TAG,"FCM Token == " + token);
-        fetchTweets(false);
+//        fetchTweets(false);
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new HomeTweetFragment(), "Timeline");
+        adapter.addFragment(new MentionTab(), "Mentions");
+        viewPager.setAdapter(adapter);
     }
 
     private void connectToWear() {
@@ -203,6 +230,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         ComposeFragment composeFragment = new ComposeFragment();
         composeFragment.show(fm, "composeFragment");
     }
+/*
 
     private void fetchTweets(final boolean isRefresh) {
 
@@ -365,6 +393,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         rvTweets.scrollToPosition(0);
     }
 
+*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -390,9 +419,9 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
     @Override
     public void onTweetPosted() {
-            fetchTweets(true);
+//            fetchTweets(true);
     }
-
+/*
     @Override
     public void onItemClick(View itemView, int position) {
         FragmentManager fm = getSupportFragmentManager();
@@ -404,7 +433,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         arg.putLong("id",tweet.getId());
         composeFragment.setArguments(arg);
         composeFragment.show(fm, "composeFragment");
-    }
+    }*/
 
     @Override
     public void onDataChanged(DataEventBuffer dataEventBuffer) {
@@ -419,6 +448,37 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
             }
+        }
+    }
+
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
 }

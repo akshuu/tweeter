@@ -16,6 +16,7 @@ public class EntitiesModel  extends Model {
     public MediaModel mediaModel;
 
     public EntitiesModel() {
+        super();
     }
 
     public EntitiesModel(MediaModel mediaModel) {

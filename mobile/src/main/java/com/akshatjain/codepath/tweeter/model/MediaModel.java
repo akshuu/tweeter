@@ -18,6 +18,7 @@ public class MediaModel extends Model {
     public String mediaURL;
 
     public MediaModel() {
+        super();
     }
 
     public MediaModel(long remoteId, String mediaURL) {

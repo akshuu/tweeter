@@ -64,4 +64,14 @@ public class TweetModel extends Model {
                 .execute();
     }
 
+    public static List<TweetModel> getAllMentionTweets(UserModel model) {
+        // This is how you execute a query
+        return new Select()
+                .from(TweetModel.class)
+                .where("user = ?",model.screenName)
+                .execute();
+    }
+
+
+
 }

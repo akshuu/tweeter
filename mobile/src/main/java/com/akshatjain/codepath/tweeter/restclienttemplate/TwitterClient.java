@@ -69,4 +69,19 @@ public class TwitterClient extends OAuthBaseClient {
 
 		client.post(url,params,handler);
 	}
+
+	public void getMentionTweets(int page,long sinceId, long maxId, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+		Log.d(Constants.TAG,"URL == " + apiUrl);
+		RequestParams params = new RequestParams();
+		if(sinceId != -1){
+			params.put("since_id", String.valueOf(sinceId));
+		}
+		if(maxId != -1){
+			params.put("max_id", String.valueOf(maxId));
+		}
+		params.put("page", String.valueOf(page));
+		client.get(apiUrl, params, handler);
+	}
+
 }

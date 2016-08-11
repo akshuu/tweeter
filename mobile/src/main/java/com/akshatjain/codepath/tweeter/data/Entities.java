@@ -18,6 +18,9 @@ public class Entities {
     @SerializedName("media")
     public List<Media> medias;
 
+    @SerializedName("user_mentions")
+    public List<UserMentions> userMentions;
+
     public Entities() {
     }
 

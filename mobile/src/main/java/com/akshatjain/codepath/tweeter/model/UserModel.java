@@ -3,6 +3,7 @@ package com.akshatjain.codepath.tweeter.model;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class UserModel extends Model {
     @Override
     public String toString() {
         return "UserModel{" +
+                " id = " + remoteId +
                 "name='" + name + '\'' +
                 ", likes=" + likes +
                 ", description='" + description + '\'' +
@@ -55,6 +57,12 @@ public class UserModel extends Model {
                 '}';
     }
 
+    public static UserModel getUserByScreenName(String screenName){
+        return new Select()
+                .from(UserModel.class)
+                .where("screen_name = ?",screenName)
+                .executeSingle();
+    }
     public List<TweetModel> tweets(){
         return getMany(TweetModel.class,"user");
     }
