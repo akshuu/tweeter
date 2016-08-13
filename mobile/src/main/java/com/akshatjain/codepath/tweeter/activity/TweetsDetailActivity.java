@@ -1,9 +1,14 @@
 package com.akshatjain.codepath.tweeter.activity;
 
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -55,6 +60,13 @@ public class TweetsDetailActivity extends AppCompatActivity {
     @BindView(R.id.btnReply)
     public ImageButton btnReply;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +74,15 @@ public class TweetsDetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+
         Tweet tweet = (Tweet) Parcels.unwrap(getIntent().getParcelableExtra("Tweet"));
 
+// Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+        tabLayout.setVisibility(View.GONE);
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
         updateUI(tweet);
     }
 
@@ -134,5 +153,16 @@ public class TweetsDetailActivity extends AppCompatActivity {
                     .into(imgTweet);
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

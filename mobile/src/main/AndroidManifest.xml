@@ -25,6 +25,7 @@
         <activity
             android:name=".activity.TweetActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
@@ -60,7 +61,14 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activity.TweetsDetailActivity">
+        <activity android:name=".activity.TweetsDetailActivity"
+                  android:theme="@style/AppTheme.NoActionBar"
+                  android:parentActivityName=".activity.TweetActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.akshatjain.codepath.tweeter.activity.TweetActivity" />
+
         </activity>
     </application>
 

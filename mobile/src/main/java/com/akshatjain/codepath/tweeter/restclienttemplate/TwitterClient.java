@@ -11,7 +11,7 @@ import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-
+import com.loopj.android.http.TextHttpResponseHandler;
 
 
 /*
@@ -84,4 +84,15 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, params, handler);
 	}
 
+	public void retweet(long retweetId, boolean bShouldRetweet, AsyncHttpResponseHandler handler) {
+		String apiUrl;
+		if(bShouldRetweet)
+			apiUrl= getApiUrl("statuses/retweet/") + retweetId + ".json";
+		else{
+			apiUrl = getApiUrl("statuses/unretweet/") + retweetId + ".json";
+		}
+		Log.d(Constants.TAG,"URL == " + apiUrl);
+		client.post(apiUrl, handler);
+
+	}
 }

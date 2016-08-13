@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.akshatjain.codepath.tweeter.FragmentLifecycle;
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.EndlessRecyclerViewScrollListener;
@@ -96,6 +97,8 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
     TweetAdapter mTweetAdapter;
     int mPage =0 ;
     GoogleApiClient mGoogleApiClient;
+    private ViewPagerAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,11 +173,37 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new HomeTweetFragment(), "Timeline");
         adapter.addFragment(new MentionTab(), "Mentions");
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(pageChangeListener);
     }
+
+    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+        int currentPosition = 0;
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            FragmentLifecycle fragmentToShow = (FragmentLifecycle)adapter.getItem(position);
+            fragmentToShow.onResumeFragment();
+
+            FragmentLifecycle fragmentToHide = (FragmentLifecycle)adapter.getItem(currentPosition);
+            fragmentToHide.onPauseFragment();
+
+            currentPosition = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 
     private void connectToWear() {
         SharedPreferences prefs = getSharedPreferences("WearState",MODE_PRIVATE);

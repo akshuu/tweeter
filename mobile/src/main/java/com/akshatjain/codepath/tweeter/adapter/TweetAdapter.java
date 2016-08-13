@@ -163,11 +163,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
     private static OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
+        void onItemClick(int position);
+        void onRetweet(View v,int position);
     }
 
     // Define the method that allows the parent activity or fragment to define the listener
     public void setOnItemClickListener(OnItemClickListener listener) {
+        Log.d(Constants.TAG,"++++++ ItemClickListener == " + listener);
         this.listener = listener;
     }
 
@@ -214,7 +216,21 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.Holder>{
                 @Override
                 public void onClick(View v) {
                     if (listener != null)
-                        listener.onItemClick(itemView, getLayoutPosition());
+                        listener.onItemClick(getLayoutPosition());
+                }
+            });
+
+            btnRetweet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onRetweet(v,getLayoutPosition());
+//                    Tweet tweet = (Tweet) v.getTag();
+//                    if(tweet.isRetweeted()){
+//                        btnRetweet.setBackgroundResource(R.drawable.retweet);
+//                    }else{
+//                        btnRetweet.setBackgroundResource(R.drawable.retweeted);
+//                    }
                 }
             });
             itemView.setOnClickListener(this);

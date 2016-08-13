@@ -2,6 +2,7 @@ package com.akshatjain.codepath.tweeter.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.akshatjain.codepath.tweeter.FragmentLifecycle;
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.activity.TweetActivity;
 import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
@@ -48,7 +50,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by akshatjain on 8/9/16.
  */
-public class MentionTab extends Fragment implements TweetAdapter.OnItemClickListener  {
+public class MentionTab extends Fragment implements TweetAdapter.OnItemClickListener, FragmentLifecycle {
 
     @BindView(R.id.tweets)
     RecyclerView rvTweets;
@@ -73,6 +75,7 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
         View view =  inflater.inflate(R.layout.fragment_mention_tab, container, false);
         ButterKnife.bind(this,view);
 
+        setRetainInstance(true);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -92,10 +95,10 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         rvTweets.setHasFixedSize(true);
-        rvTweets.addItemDecoration(new DividerItemDecoration(getContext()));
+        rvTweets.addItemDecoration(new DividerItemDecoration(getActivity()));
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getContext());
+        mLayoutManager = new LinearLayoutManager(getActivity());
         rvTweets.setLayoutManager(mLayoutManager);
 
         rvTweets.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLayoutManager) {
@@ -118,13 +121,14 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
     @Override
     public void onResume() {
         super.onResume();
-        fetchMentionTweets(false);
+//        fetchMentionTweets(false);
+
 
     }
 
     private void fetchMentionTweets(final boolean isRefresh) {
 
-        if(Utils.isNetworkAvailable(getContext())) {
+        if(Utils.isNetworkAvailable(getActivity())) {
 
             long since_id = -1,max_id = -1;
 
@@ -208,13 +212,15 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
                         }
                     }
 
+                    Log.d(Constants.TAG, "++++++Mention Twet Adapter == " + mTweetAdapter);
+
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
                     // called when response HTTP status is "4XX" (eg. 401, 403, 404)
                     Log.w(Constants.TAG, " but callback was received" + res, t);
-                    Toast.makeText(getContext(), "Error getting the list of tweets. Please try again...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Error getting the list of tweets. Please try again...", Toast.LENGTH_LONG).show();
 
                     if (isRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
@@ -224,7 +230,7 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
 
             });
         }else{
-            Toast.makeText(getContext(),"No Internet connection. Please try again...",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),"No Internet connection. Please try again...",Toast.LENGTH_LONG).show();
             loadOfflineTweets();
             if (isRefresh) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -292,7 +298,7 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
     }
 
     @Override
-    public void onItemClick(View itemView, int position) {
+    public void onItemClick(int position) {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         ComposeFragment composeFragment = new ComposeFragment();
         Bundle arg = new Bundle();
@@ -302,5 +308,62 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
         arg.putLong("id",tweet.getId());
         composeFragment.setArguments(arg);
         composeFragment.show(fm, "composeFragment");
+    }
+
+    @Override
+    public void onRetweet(final View v, final int position) {
+        final Tweet tweet = mTweetList.get(position);
+        long retweetId = tweet.getId();
+        boolean bShouldRetweet = true;
+        if(tweet.isRetweeted())
+            bShouldRetweet = false;
+        Log.d(Constants.TAG,"Handle == " + tweet.getUserDetails().getScreenName()  +" , retweet == " + retweetId);
+        twitterClient.retweet(retweetId,bShouldRetweet,new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Snackbar.make(v, "Unable to update the tweet. Please try again", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                Log.d(Constants.TAG,"Failed Updated tweet : res ==" + responseString);
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Snackbar.make(v, "Update the tweet.", Snackbar.LENGTH_LONG)
+                        .setAction("Ok", null).show();
+                Log.d(Constants.TAG,"Updated tweet : res ==" + responseString);
+                Tweet tweetUpdated = (Tweet) new Gson()
+                        .fromJson(responseString, Tweet.class);
+
+                Log.d(Constants.TAG,"Updated tweet : tweet :  ==" + tweetUpdated.isRetweeted());
+                mTweetList.remove(position);
+//                mTweetAdapter.notifyItemRemoved(position);
+                mTweetList.add(position,tweetUpdated);
+                mTweetAdapter.notifyItemChanged(position);
+//                if(tweet.isRetweeted()){
+//                    tweet.isRetweeted =false;
+//                }else{
+//                    tweet.isRetweeted = true;
+//                }
+
+            }
+
+        });
+
+    }
+
+    @Override
+    public void onPauseFragment() {
+
+    }
+
+    @Override
+    public void onResumeFragment() {
+        Log.d(Constants.TAG,"+++MentionTab, mAdapter= " + mTweetAdapter);
+        if(mTweetAdapter != null){
+            mTweetAdapter.setOnItemClickListener(MentionTab.this);
+        }
+        if(mTweetAdapter == null || mTweetAdapter.getItemCount() == 0)
+            fetchMentionTweets(false);
     }
 }
