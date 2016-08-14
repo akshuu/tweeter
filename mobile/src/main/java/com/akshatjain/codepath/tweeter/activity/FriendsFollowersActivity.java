@@ -1,6 +1,5 @@
 package com.akshatjain.codepath.tweeter.activity;
 
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -11,7 +10,7 @@ import android.view.MenuItem;
 
 import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.data.Users;
-import com.akshatjain.codepath.tweeter.fragment.FollowngFragment;
+import com.akshatjain.codepath.tweeter.fragment.FollowingFragment;
 import com.akshatjain.codepath.tweeter.fragment.FriendsList;
 
 import org.parceler.Parcels;
@@ -19,7 +18,7 @@ import org.parceler.Parcels;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FriendsFollowersActivity extends AppCompatActivity {
+public class FriendsFollowersActivity extends AppCompatActivity{
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -45,7 +44,7 @@ public class FriendsFollowersActivity extends AppCompatActivity {
             fm.beginTransaction().replace(R.id.frndsContent, fragment).commit();
         }else{
             getSupportActionBar().setTitle("Followers");
-            Fragment fragment = new FollowngFragment();
+            Fragment fragment = new FollowingFragment();
             Bundle bundle = new Bundle();
             bundle.putParcelable("Users",Parcels.wrap(lUsers));
             fragment.setArguments(bundle);

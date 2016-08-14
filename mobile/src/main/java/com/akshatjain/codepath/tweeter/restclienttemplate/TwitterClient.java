@@ -100,6 +100,7 @@ public class TwitterClient extends OAuthBaseClient {
 		String apiUrl = getApiUrl("users/show.json");
 		RequestParams params = new RequestParams();
 		params.put("screen_name", screenName);
+		Log.d(Constants.TAG,"User details URL == " + apiUrl);
 		client.get(apiUrl,params,handler);
 	}
 

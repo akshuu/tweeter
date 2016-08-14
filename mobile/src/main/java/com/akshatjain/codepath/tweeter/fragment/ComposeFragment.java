@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -129,7 +130,10 @@ public class ComposeFragment extends DialogFragment {
             public void onClick(View v) {
 
                 if (TextUtils.isEmpty(txtTweet.getText())) {
-                    Toast.makeText(getActivity(), "Please enter something to tweet", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Please enter something to tweet", Snackbar.LENGTH_LONG)
+                            .setAction("OK", null).show();
+
+//                    Toast.makeText(getActivity(), "Please enter something to tweet", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -156,7 +160,9 @@ public class ComposeFragment extends DialogFragment {
 
                         });
                 } else {
-                    Toast.makeText(getActivity(), "No Internet connection. Please try again...", Toast.LENGTH_LONG).show();
+                    Snackbar.make(v, "No Internet connection. Please try again...", Snackbar.LENGTH_LONG)
+                            .setAction("OK", null).show();
+
                 }
             }
         });

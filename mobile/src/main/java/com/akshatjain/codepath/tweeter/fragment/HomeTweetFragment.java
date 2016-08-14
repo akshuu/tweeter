@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.akshatjain.codepath.tweeter.FragmentLifecycle;
 import com.akshatjain.codepath.tweeter.R;
@@ -82,7 +81,6 @@ public class HomeTweetFragment extends Fragment implements TweetAdapter.OnItemCl
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                Toast.makeText(getActivity(),"Refresh",Toast.LENGTH_SHORT).show();
                 fetchHomeTweets(true);
             }
         });
@@ -215,7 +213,6 @@ public class HomeTweetFragment extends Fragment implements TweetAdapter.OnItemCl
                 public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
                     // called when response HTTP status is "4XX" (eg. 401, 403, 404)
                     Log.w(Constants.TAG, " but callback was received" + res, t);
-                    Toast.makeText(getActivity(), "Error getting the list of tweets. Please try again...", Toast.LENGTH_LONG).show();
 
                     if (isRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
@@ -225,7 +222,9 @@ public class HomeTweetFragment extends Fragment implements TweetAdapter.OnItemCl
 
             });
         }else{
-            Toast.makeText(getActivity(),"No Internet connection. Please try again...",Toast.LENGTH_LONG).show();
+            Snackbar.make(rvTweets, "No Internet connection. Please try again...", Snackbar.LENGTH_LONG)
+                    .setAction("OK", null).show();
+
             loadOfflineTweets();
             if (isRefresh) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -329,14 +328,8 @@ public class HomeTweetFragment extends Fragment implements TweetAdapter.OnItemCl
 
                 Log.d(Constants.TAG,"Updated tweet : tweet :  ==" + tweetUpdated.isRetweeted());
                 mTweetList.remove(position);
-//                mTweetAdapter.notifyItemRemoved(position);
                 mTweetList.add(position,tweetUpdated);
                 mTweetAdapter.notifyItemChanged(position);
-//                if(tweet.isRetweeted()){
-//                    tweet.isRetweeted =false;
-//                }else{
-//                    tweet.isRetweeted = true;
-//                }
 
             }
 

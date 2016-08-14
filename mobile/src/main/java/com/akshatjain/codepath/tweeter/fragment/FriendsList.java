@@ -1,6 +1,7 @@
 package com.akshatjain.codepath.tweeter.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,13 +14,20 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.akshatjain.codepath.tweeter.R;
+import com.akshatjain.codepath.tweeter.activity.ProfileActivity;
 import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.EndlessRecyclerViewScrollListener;
 import com.akshatjain.codepath.tweeter.adapter.FriendsAdapter;
+import com.akshatjain.codepath.tweeter.adapter.FriendsAdapter.OnItemClickListener;
 import com.akshatjain.codepath.tweeter.data.User;
 import com.akshatjain.codepath.tweeter.data.Users;
+import com.akshatjain.codepath.tweeter.model.AuthUserModel;
+import com.akshatjain.codepath.tweeter.model.UserModel;
+import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
 import com.akshatjain.codepath.tweeter.restclienttemplate.TwitterClient;
 import com.akshatjain.codepath.tweeter.utils.Constants;
+import com.google.gson.Gson;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.parceler.Parcels;
 
@@ -27,11 +35,12 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FriendsList extends Fragment {
+public class FriendsList extends Fragment  implements OnItemClickListener{
 
 
     @BindView(R.id.users)
@@ -68,7 +77,7 @@ public class FriendsList extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                Toast.makeText(getActivity(),"Refresh",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(),"Refresh",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -95,11 +104,44 @@ public class FriendsList extends Fragment {
                 mPage = page ;
             }
         });
+        twitterClient = RestApplication.getRestClient();
+
         Bundle bundle = getArguments();
         Users lusers = Parcels.unwrap(bundle.getParcelable("Users"));
         mFriendsAdapter = new FriendsAdapter(lusers.users,getActivity());
         rvUsers.setAdapter(mFriendsAdapter);
+        mFriendsAdapter.setOnItemClickListener(this);
         return view;
     }
 
+    @Override
+    public void showUserProfile(final String screenHandle) {
+
+        Log.d(Constants.TAG,"user handle == " +screenHandle);
+
+        twitterClient.getUser(screenHandle, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Log.d(Constants.TAG,"URL detail response == " + responseString);
+                User user = (User) new Gson()
+                        .fromJson(responseString, User.class);
+
+                Log.d(Constants.TAG,"Logged IN user == " + user.getScreenName());
+
+                Intent profile = new Intent(getActivity(),ProfileActivity.class);
+                profile.putExtra("Username",screenHandle);
+                profile.putExtra("User",Parcels.wrap(user));
+                profile.putExtra("isLoggedIn",false);
+                getActivity().startActivity(profile);
+            }
+        });
+
+
+
+    }
 }

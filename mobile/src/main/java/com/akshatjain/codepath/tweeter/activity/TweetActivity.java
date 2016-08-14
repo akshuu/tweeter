@@ -204,16 +204,10 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
             headerResult = new AccountHeaderBuilder()
                     .withActivity(this)
-                    .withHeaderBackground(R.drawable.header)
+                    .withHeaderBackground(R.color.primary)
                     .addProfiles(
                             new ProfileDrawerItem().withName(userModel.name).withEmail("@"+userModel.screenName).withIcon(userModel.profileImageUrl)
                     )
-                    /*.withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                        @Override
-                        public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                            return false;
-                        }
-                    })*/
                     .build();
         }
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.profile);

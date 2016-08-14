@@ -90,31 +90,37 @@ public class ProfileActivity extends AppCompatActivity {
         boolean isLoggedIn = getIntent().getBooleanExtra("isLoggedIn",false);
         UserModel userModel;
 
-        if(!isLoggedIn) {
-            final List<UserModel> lUserModel = UserModel.getUserByScreenName(userHandle);
+        if(userHandle != null && !isLoggedIn ) {
+            User user = Parcels.unwrap(getIntent().getParcelableExtra("User"));
+            name.setText(user.name);
+            handle.setText("@" + user.screenName);
+            description.setText(user.description);
+            followCnt.setText(user.friendsCnt + "");
+            followerCnt.setText(user.followersCnt + "");
+            Glide.with(this)
+                    .load(user.profileImageUrl)
+                    .fitCenter()
+                    .dontAnimate()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(profImage);
 
-            Log.d(Constants.TAG, "UserModel -" + lUserModel);
-            userModel = lUserModel.get(0);
-            if(userModel == null){
-                Log.d(Constants.TAG, "Empty UserModel -" + userModel);
-
-                return;
-            }
         }else{
             userModel = AuthUserModel.getLoggedInUser();
-        }
-        name.setText(userModel.name);
-        handle.setText("@" + userModel.screenName);
-        description.setText(userModel.description);
-        followCnt.setText(userModel.friends + "");
-        followerCnt.setText(userModel.followers + "");
+            name.setText(userModel.name);
+            handle.setText("@" + userModel.screenName);
+            description.setText(userModel.description);
+            followCnt.setText(userModel.friends + "");
+            followerCnt.setText(userModel.followers + "");
+            Glide.with(this)
+                    .load(userModel.profileImageUrl)
+                    .fitCenter()
+                    .dontAnimate()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(profImage);
 
-        Glide.with(this)
-                .load(userModel.profileImageUrl)
-                .fitCenter()
-                .dontAnimate()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(profImage);
+        }
+
+
 
 
         following.setOnClickListener(new View.OnClickListener() {

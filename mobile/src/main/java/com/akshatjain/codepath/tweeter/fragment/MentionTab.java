@@ -12,11 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.akshatjain.codepath.tweeter.FragmentLifecycle;
 import com.akshatjain.codepath.tweeter.R;
-import com.akshatjain.codepath.tweeter.activity.TweetActivity;
 import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.EndlessRecyclerViewScrollListener;
 import com.akshatjain.codepath.tweeter.adapter.TweetAdapter;
@@ -82,7 +80,6 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                Toast.makeText(getActivity(),"Refresh",Toast.LENGTH_SHORT).show();
                 fetchMentionTweets(true);
             }
         });
@@ -220,7 +217,6 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
                 public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
                     // called when response HTTP status is "4XX" (eg. 401, 403, 404)
                     Log.w(Constants.TAG, " but callback was received" + res, t);
-                    Toast.makeText(getActivity(), "Error getting the list of tweets. Please try again...", Toast.LENGTH_LONG).show();
 
                     if (isRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
@@ -230,7 +226,9 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
 
             });
         }else{
-            Toast.makeText(getActivity(),"No Internet connection. Please try again...",Toast.LENGTH_LONG).show();
+            Snackbar.make(rvTweets, "No Internet connection. Please try again...", Snackbar.LENGTH_LONG)
+                    .setAction("OK", null).show();
+
             loadOfflineTweets();
             if (isRefresh) {
                 swipeRefreshLayout.setRefreshing(false);
