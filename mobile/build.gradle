@@ -40,11 +40,6 @@ dependencies {
     // ActiveAndroid for simple persistence with an ORM
 
 
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
-
-    //    compile 'com.google.android.gms:play-services:9.4.0'
-    apt 'org.parceler:parceler:1.1.1'
-
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -67,6 +62,14 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.4.0@aar') {
         transitive = true
     }
+    androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.6.1'
+
+
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    //    compile 'com.google.android.gms:play-services:9.4.0'
+    apt 'org.parceler:parceler:1.1.1'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

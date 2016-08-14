@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/cartoon_wars">
+        <menu>
+            <group android:checkableBehavior="single">
+
+    <item android:id="@+id/south_park"
+          android:title="@string/south_park"/>
+
+    <item android:id="@+id/family_guy"
+          android:title="@string/family_guy"/>
+
+        </group>
+    </menu>
+    </item>
+
+    <item android:title="@string/simpsorama">
+        <menu>
+            <group android:checkableBehavior="single">
+
+            <item android:id="@+id/simpsons"
+          android:title="@string/simpsons"/>
+
+    <item android:id="@+id/futurama"
+          android:title="@string/futurama"/>
+    </group>
+            </menu>
+    </item>
+</menu>

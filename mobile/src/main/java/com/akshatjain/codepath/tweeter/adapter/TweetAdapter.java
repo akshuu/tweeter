@@ -4,13 +4,8 @@ package com.akshatjain.codepath.tweeter.adapter;
  * Created by akshatjain on 8/3/16.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -23,11 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akshatjain.codepath.tweeter.R;
-import com.akshatjain.codepath.tweeter.activity.TweetActivity;
 import com.akshatjain.codepath.tweeter.activity.TweetsDetailActivity;
-import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
-import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
 import com.akshatjain.codepath.tweeter.utils.Constants;
 import com.akshatjain.codepath.tweeter.utils.Utils;
 import com.bumptech.glide.Glide;

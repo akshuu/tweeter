@@ -28,6 +28,12 @@ public class User {
     @SerializedName("profile_image_url_https")
     public String profileImageUrl;
 
+    @SerializedName("followers_count")
+    public long followersCnt;
+
+    @SerializedName("friends_count")
+    public long friendsCnt;
+
     public User() {
     }
 

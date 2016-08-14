@@ -3,7 +3,7 @@
 **Tweetr** is an android app that allows a user to view home and mentions timelines, view user profiles with user timelines, as well as compose and post a new tweet. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
 
-Time spent: **7** hours spent in total
+Time spent: **13** hours spent in total
 
 The following **required** functionality is completed:
 
@@ -11,12 +11,12 @@ The following **required** functionality is completed:
 * [X] User can **switch between Timeline and Mention views using tabs**
   * [X] User can view their home timeline tweets.
   * [X] User can view the recent mentions of their username.
-* [ ] User can navigate to **view their own profile**
+* [X] User can navigate to **view their own profile**
   * [ ] User can see picture, tagline, # of followers, # of following, and tweets on their profile.
-* [ ] User can **click on the profile image** in any tweet to see **another user's** profile.
+* [X] User can **click on the profile image** in any tweet to see **another user's** profile.
  * [ ] User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
  * [ ] Profile view includes that user's timeline
-* [ ] User can [infinitely paginate](http://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews-and-RecyclerView) any of these timelines (home, mentions, user) by scrolling to the bottom
+* [X] User can [infinitely paginate](http://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews-and-RecyclerView) any of these timelines (home, mentions, user) by scrolling to the bottom
 
 The following **optional** features are implemented:
 

@@ -1,6 +1,10 @@
 package com.akshatjain.codepath.tweeter.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,38 +13,27 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.akshatjain.codepath.tweeter.FragmentLifecycle;
 import com.akshatjain.codepath.tweeter.R;
-import com.akshatjain.codepath.tweeter.adapter.DividerItemDecoration;
-import com.akshatjain.codepath.tweeter.adapter.EndlessRecyclerViewScrollListener;
-import com.akshatjain.codepath.tweeter.adapter.SpacesItemDecoration;
 import com.akshatjain.codepath.tweeter.adapter.TweetAdapter;
-import com.akshatjain.codepath.tweeter.data.Entities;
-import com.akshatjain.codepath.tweeter.data.Media;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.akshatjain.codepath.tweeter.data.User;
 import com.akshatjain.codepath.tweeter.fragment.ComposeFragment;
 import com.akshatjain.codepath.tweeter.fragment.HomeTweetFragment;
 import com.akshatjain.codepath.tweeter.fragment.MentionTab;
-import com.akshatjain.codepath.tweeter.model.EntitiesModel;
-import com.akshatjain.codepath.tweeter.model.MediaModel;
-import com.akshatjain.codepath.tweeter.model.TweetModel;
-import com.akshatjain.codepath.tweeter.model.UserModel;
+import com.akshatjain.codepath.tweeter.model.AuthUserModel;
 import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
 import com.akshatjain.codepath.tweeter.restclienttemplate.TwitterClient;
 import com.akshatjain.codepath.tweeter.utils.Constants;
-import com.akshatjain.codepath.tweeter.utils.Utils;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
@@ -52,13 +45,21 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 
-import org.scribe.model.Token;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +99,7 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
     int mPage =0 ;
     GoogleApiClient mGoogleApiClient;
     private ViewPagerAdapter adapter;
+    private Drawer navDrawer;
 
 
     @Override
@@ -108,7 +110,11 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
         setSupportActionBar(toolbar);
 
-        new DrawerBuilder().withActivity(this).build();
+        DrawerBuilder drawerBuilder = new DrawerBuilder().withActivity(this);
+        drawerBuilder.inflateMenu(R.menu.drawer_view);
+        drawerBuilder.build();
+
+//        createNavigationDrawer();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,56 +126,136 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
 
             }
         });
-/*
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                Toast.makeText(getApplicationContext(),"Refresh",Toast.LENGTH_SHORT).show();
-                fetchTweets(true);
-            }
-        });
-
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        rvTweets.setHasFixedSize(true);
-        rvTweets.addItemDecoration(new DividerItemDecoration(this));
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        rvTweets.setLayoutManager(mLayoutManager);
-
-        rvTweets.addOnScrollListener(new EndlessRecyclerViewScrollListener(mLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                Log.d(Constants.TAG, "page ==" + page);
-                mPage = page ;
-                fetchTweets(false);
-            }
-        });
-*/
-
 
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
 
         twitterClient = RestApplication.getRestClient();
+        twitterClient.getUserProfile(new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                User user = (User) new Gson()
+                        .fromJson(responseString, User.class);
+
+                Log.d(Constants.TAG,"Logged IN user == " + user.getScreenName());
+                AuthUserModel model = new AuthUserModel(user.getId(),
+                        user.getName(),
+                        user.getLikes(),
+                        user.getScreenName(),
+                        user.getDescription(),
+                        user.getProfileImageUrl(),
+                        user.followersCnt,
+                        user.friendsCnt);
+                model.save();
+                createNavigationDrawer();
+            }
+        });
         connectToWear();
 
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(Constants.TAG,"FCM Token == " + token);
-//        fetchTweets(false);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    private void createNavigationDrawer() {
+        // Create the AccountHeader
+        AccountHeader headerResult = null;
+        final AuthUserModel userModel = AuthUserModel.getLoggedInUser();
+        if(userModel != null) {
+
+            DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+                @Override
+                public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                    Glide.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+                }
+
+                @Override
+                public void cancel(ImageView imageView) {
+                    Glide.clear(imageView);
+                }
+
+                @Override
+                public Drawable placeholder(Context ctx, String tag) {
+                    //define different placeholders for different imageView targets
+                    //default tags are accessible via the DrawerImageLoader.Tags
+                    //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                    if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
+                        return DrawerUIUtils.getPlaceHolder(ctx);
+                    } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
+                        return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
+                    } else if ("customUrlItem".equals(tag)) {
+                        return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
+                    }
+
+                    //we use the default one for
+                    //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+
+                    return super.placeholder(ctx, tag);
+                }
+            });
+
+            DrawerImageLoader.getInstance().getImageLoader().placeholder(this, DrawerImageLoader.Tags.PROFILE.name());
+
+            headerResult = new AccountHeaderBuilder()
+                    .withActivity(this)
+                    .withHeaderBackground(R.drawable.header)
+                    .addProfiles(
+                            new ProfileDrawerItem().withName(userModel.name).withEmail("@"+userModel.screenName).withIcon(userModel.profileImageUrl)
+                    )
+                    /*.withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                        @Override
+                        public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                            return false;
+                        }
+                    })*/
+                    .build();
+        }
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.profile);
+        SecondaryDrawerItem item2 = (SecondaryDrawerItem) new SecondaryDrawerItem().withIdentifier(2).withName(R.string.settings);
+
+//Now create your drawer and pass the AccountHeader.Result
+        // do something with the clicked item :D
+        DrawerBuilder navDrawerBuilder = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .addDrawerItems(
+                        item1,
+                        new DividerDrawerItem(),
+                        item2,
+                        new SecondaryDrawerItem().withName(R.string.logout)
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        Snackbar.make(view, "you clicked " + position, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                        if(position == 1){
+                            showProfileActivity(userModel.screenName);
+                        }
+                        return true;
+                    }
+                });
+
+        if(headerResult != null) {
+            navDrawerBuilder.withAccountHeader(headerResult);
+        }
+
+        navDrawer = navDrawerBuilder.build();
+
+    }
+
+    private void showProfileActivity(String name) {
+        Intent profile = new Intent(this,ProfileActivity.class);
+        profile.putExtra("Username",name);
+        profile.putExtra("isLoggedIn",true);
+        startActivity(profile);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -259,170 +345,6 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         ComposeFragment composeFragment = new ComposeFragment();
         composeFragment.show(fm, "composeFragment");
     }
-/*
-
-    private void fetchTweets(final boolean isRefresh) {
-
-        if(Utils.isNetworkAvailable(this)) {
-
-            twitterClient.getHomeTimeline(mPage, new TextHttpResponseHandler() {
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String res) {
-                    // called when response HTTP status is "200 OK"
-                    Log.d(Constants.TAG, "Response string== " + res);
-                    // Define tweet class to correspond to the JSON response returned
-                    Type collectionType = new TypeToken<List<Tweet>>() {
-                    }.getType();
-                    List<Tweet> lTweets = (List<Tweet>) new Gson()
-                            .fromJson(res, collectionType);
-                    Log.d(Constants.TAG, "Tweet == " + lTweets.size());
-                    for (int i = 0; i < lTweets.size(); i++) {
-                        Log.d(Constants.TAG, "Saving Tweets to DB == " + lTweets.get(i).toString());
-                        Tweet tweet = lTweets.get(i);
-                        User user = tweet.getUserDetails();
-                        UserModel userModel = new UserModel(user.getId(),
-                                user.getName(),
-                                user.getLikes(),
-                                user.getScreenName(),
-                                user.getDescription(),
-                                user.getProfileImageUrl()
-                                );
-
-                        userModel.save();
-
-                        EntitiesModel entitiesModel = null;
-                        Log.d(Constants.TAG,"SAving entities : " + tweet.getEntities());
-                        if(tweet.getEntities() != null) {
-                            List<Media> mediasList = tweet.getEntities().getMedias();
-                            if (mediasList != null) {
-                                for (Media media : mediasList) {
-                                    MediaModel mediaModel = new MediaModel(media.getId(), media.getMediaUrl());
-                                    mediaModel.save();
-                                    entitiesModel = new EntitiesModel(mediaModel);
-                                    Log.d(Constants.TAG,"calling save on entities : " + entitiesModel);
-                                    entitiesModel.save();
-
-                                }
-                            }
-                        }
-
-
-                        TweetModel tweetModel = new TweetModel(tweet.getId(),tweet.getCreated_at(),tweet.getText(),
-                                tweet.getRetweet_count(),tweet.isFavorite(),
-                                tweet.isRetweeted(),tweet.getFavoriteCount(),userModel,entitiesModel );
-                        tweetModel.save();
-
-                    }
-                    if (isRefresh) {
-                        swipeRefreshLayout.setRefreshing(false);
-                        int curSize = mTweetAdapter.getItemCount();
-                        mTweetList.clear();
-                        mTweetAdapter.notifyItemRangeRemoved(0, curSize);
-                    }
-
-                    mTweetList.addAll(lTweets);
-                    if(mTweetAdapter == null) {
-                        Log.d(Constants.TAG, "new Adapter == " + mTweetList.size());
-                        mTweetAdapter = new TweetAdapter(mTweetList, TweetActivity.this);
-                        mTweetAdapter.setOnItemClickListener(TweetActivity.this);
-                        rvTweets.setAdapter(mTweetAdapter);
-
-                        mTweetAdapter.notifyItemInserted(0);
-                        rvTweets.scrollToPosition(0);
-                    }else{
-                        int curSize = mTweetAdapter.getItemCount();
-                        Log.d(Constants.TAG, "updating items in range == " + curSize + ", " + lTweets.size());
-                        if(isRefresh){
-                            mTweetAdapter.notifyItemRangeInserted(0,lTweets.size());
-                        }else {
-                            mTweetAdapter.notifyItemRangeInserted(curSize, lTweets.size());
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
-                    // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                    Log.w(Constants.TAG, " but callback was received" + res, t);
-                    Toast.makeText(TweetActivity.this, "Error getting the list of tweets. Please try again...", Toast.LENGTH_LONG).show();
-
-                    if (isRefresh) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                    loadOfflineTweets();
-                }
-
-            });
-        }else{
-            Toast.makeText(this,"No Internet connection. Please try again...",Toast.LENGTH_LONG).show();
-            loadOfflineTweets();
-            if (isRefresh) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }
-    }
-
-    private void loadOfflineTweets() {
-        Log.w(Constants.TAG, "loading offline tweets");
-            List<Tweet> lTweets = new ArrayList<>();
-            List<TweetModel> tweetModels = TweetModel.getAllTweets();
-            for(TweetModel model : tweetModels){
-                UserModel userModel = model.userModel;
-                User user = new User(userModel.remoteId,
-                        userModel.name,
-                        userModel.likes,
-                        userModel.screenName,
-                        userModel.description,
-                        userModel.profileImageUrl);
-
-                EntitiesModel entitiesModel = model.entitiesModel;
-                MediaModel mediaModel;
-
-                Entities entities = null;
-                if(entitiesModel != null){
-                    mediaModel = entitiesModel.mediaModel;
-                    Media media = new Media( mediaModel.remoteId,mediaModel.mediaURL,null);
-                    List<Media> lMedia = new ArrayList<>();
-                    lMedia.add(media);
-                    entities = new Entities(lMedia);
-                }
-                Tweet tweet = new Tweet(model.remoteId,
-                        model.created_at,
-                        model.text,
-                        model.retweet_count,
-                        model.isFavorite,
-                        model.isRetweeted,
-                        user,
-                        model.favoriteCount,
-                        entities
-                        );
-
-
-                Log.w(Constants.TAG,"Saved tweet = " + tweet.toString());
-                lTweets.add(tweet);
-            }
-
-        mTweetList = new ArrayList<>();
-
-        Log.w(Constants.TAG,"MTAdapter = " + mTweetAdapter);
-        if(mTweetAdapter != null) {
-            int curSize = mTweetAdapter.getItemCount();
-            mTweetAdapter.notifyItemRangeRemoved(0, curSize);
-            mTweetList.addAll(lTweets);
-        }else{
-            mTweetList.addAll(lTweets);
-            mTweetAdapter = new TweetAdapter(mTweetList, TweetActivity.this);
-        }
-        rvTweets.setAdapter(mTweetAdapter);
-        Log.w(Constants.TAG, "total offline tweets : " + lTweets.size());
-
-        mTweetAdapter.notifyItemInserted(0);
-        rvTweets.scrollToPosition(0);
-    }
-
-*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -438,13 +360,19 @@ public class TweetActivity extends AppCompatActivity implements ComposeFragment.
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        // The action bar home/up action should open or close the drawer.
+        switch (item.getItemId()) {
+           /* case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;*/
+            case R.id.action_settings:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     @Override
     public void onTweetPosted() {

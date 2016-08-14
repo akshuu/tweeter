@@ -121,7 +121,7 @@ public class HomeTweetFragment extends Fragment implements TweetAdapter.OnItemCl
     @Override
     public void onResume() {
         super.onResume();
-//        fetchHomeTweets(false);
+        fetchHomeTweets(false);
 
     }
 
@@ -150,7 +150,9 @@ public class HomeTweetFragment extends Fragment implements TweetAdapter.OnItemCl
                                 user.getLikes(),
                                 user.getScreenName(),
                                 user.getDescription(),
-                                user.getProfileImageUrl()
+                                user.getProfileImageUrl(),
+                                user.followersCnt,
+                                user.friendsCnt
                         );
 
                         userModel.save();

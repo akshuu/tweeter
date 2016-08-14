@@ -17,10 +17,10 @@
             android:value="RestClient.db"/>
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="6"/>
+            android:value="8"/>
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.akshatjain.codepath.tweeter.model.UserModel,com.akshatjain.codepath.tweeter.model.TweetModel,com.akshatjain.codepath.tweeter.model.MediaModel,com.akshatjain.codepath.tweeter.model.EntitiesModel,com.akshatjain.codepath.tweeter.model.MentionsModel"/>
+            android:value="com.akshatjain.codepath.tweeter.model.UserModel,com.akshatjain.codepath.tweeter.model.TweetModel,com.akshatjain.codepath.tweeter.model.MediaModel,com.akshatjain.codepath.tweeter.model.EntitiesModel,com.akshatjain.codepath.tweeter.model.MentionsModel,com.akshatjain.codepath.tweeter.model.AuthUserModel"/>
 
         <activity
             android:name=".activity.TweetActivity"
@@ -61,14 +61,31 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activity.TweetsDetailActivity"
-                  android:theme="@style/AppTheme.NoActionBar"
-                  android:parentActivityName=".activity.TweetActivity" >
+        <activity
+            android:name=".activity.TweetsDetailActivity"
+            android:parentActivityName=".activity.TweetActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.akshatjain.codepath.tweeter.activity.TweetActivity" />
-
+                android:value="com.akshatjain.codepath.tweeter.activity.TweetActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:launchMode="singleTop"
+            android:parentActivityName=".activity.TweetActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.akshatjain.codepath.tweeter.activity.TweetActivity"/>
+        </activity>
+        <activity android:name=".activity.FriendsFollowersActivity"
+                  android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.akshatjain.codepath.tweeter.activity.ProfileActivity"/>
         </activity>
     </application>
 

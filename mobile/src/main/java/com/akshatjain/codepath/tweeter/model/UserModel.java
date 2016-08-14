@@ -4,7 +4,6 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -33,17 +32,26 @@ public class UserModel extends Model {
     @Column(name = "image_url")
     public String profileImageUrl;
 
+    @Column(name = "followers")
+    public long followers;
+
+    @Column(name = "friends")
+    public long friends;
+
     public UserModel() {
         super();
     }
 
-    public UserModel(long id, String name, int likes, String screenName, String description, String profileImageUrl) {
-        this.remoteId = id;
+
+    public UserModel(long remoteId, String name, int likes, String screenName, String description, String profileImageUrl, long followers, long friends) {
+        this.remoteId = remoteId;
         this.name = name;
         this.likes = likes;
         this.screenName = screenName;
         this.description = description;
         this.profileImageUrl = profileImageUrl;
+        this.followers = followers;
+        this.friends = friends;
     }
 
     @Override
@@ -57,11 +65,11 @@ public class UserModel extends Model {
                 '}';
     }
 
-    public static UserModel getUserByScreenName(String screenName){
+    public static List<UserModel> getUserByScreenName(String screenName){
         return new Select()
                 .from(UserModel.class)
                 .where("screen_name = ?",screenName)
-                .executeSingle();
+                .execute();
     }
     public List<TweetModel> tweets(){
         return getMany(TweetModel.class,"user");
