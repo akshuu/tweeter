@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +21,7 @@ import com.akshatjain.codepath.tweeter.R;
 import com.akshatjain.codepath.tweeter.data.Tweet;
 import com.akshatjain.codepath.tweeter.data.User;
 import com.akshatjain.codepath.tweeter.data.Users;
+import com.akshatjain.codepath.tweeter.fragment.MentionTab;
 import com.akshatjain.codepath.tweeter.model.AuthUserModel;
 import com.akshatjain.codepath.tweeter.model.UserModel;
 import com.akshatjain.codepath.tweeter.restclienttemplate.RestApplication;
@@ -120,9 +122,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         }
 
-
-
-
         following.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,6 +170,15 @@ public class ProfileActivity extends AppCompatActivity {
                 });
             }
         });
+
+        MentionTab mentionTab = new MentionTab();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isUserTweet",true);
+        bundle.putString("ScreenName",userHandle);
+        mentionTab.setArguments(bundle);
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.userTweetContent, mentionTab).commit();
+
     }
 
     @Override

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.akshatjain.codepath.tweeter.activity.ProfileActivity"
     tools:showIn="@layout/activity_profile">
@@ -112,10 +112,15 @@
         android:background="@color/material_drawer_divider"
         />
 
-    <include layout="@layout/content_tweet_mention"
-             android:layout_width="match_parent"
-             android:layout_marginTop="5dp"
-             android:layout_height="wrap_content"
-             android:layout_below="@+id/divider1"
+    <FrameLayout
+        android:layout_below="@+id/divider1"
+        android:id="@+id/userTweetContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
         />
+
 </RelativeLayout>

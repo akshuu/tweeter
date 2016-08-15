@@ -62,6 +62,8 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
     int mPage =0 ;
     TweetAdapter mTweetAdapter;
     ArrayList<Tweet> mTweetList = new ArrayList<>();
+    boolean isUserTweet = false;
+    String screenName;
 
     public MentionTab() {
     }
@@ -80,7 +82,7 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                fetchMentionTweets(true);
+                fetchMentionTweets(true, isUserTweet);
             }
         });
 
@@ -105,11 +107,14 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
                 // Add whatever code is needed to append new items to the bottom of the list
                 Log.d(Constants.TAG, "page ==" + page);
                 mPage = page ;
-                fetchMentionTweets(false);
+                fetchMentionTweets(false, isUserTweet);
             }
         });
 
-
+        if(getArguments() != null && getArguments().getBoolean("isUserTweet")){
+            isUserTweet = true;
+            screenName = getArguments().getString("ScreenName");
+        }
         twitterClient = RestApplication.getRestClient();
 
         return view;
@@ -118,12 +123,14 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
     @Override
     public void onResume() {
         super.onResume();
-//        fetchMentionTweets(false);
-
+        if(isUserTweet) {
+            Log.d(Constants.TAG,"Fetching user time tweets for : " + screenName);
+            fetchMentionTweets(false,isUserTweet);
+        }
 
     }
 
-    private void fetchMentionTweets(final boolean isRefresh) {
+    private void fetchMentionTweets(final boolean isRefresh, boolean isUserTweet) {
 
         if(Utils.isNetworkAvailable(getActivity())) {
 
@@ -144,7 +151,7 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
                 Log.d(Constants.TAG, "Mention Tab : max Id == " + max_id);
             }
 
-            twitterClient.getMentionTweets(mPage, since_id,max_id,new TextHttpResponseHandler() {
+            twitterClient.getMentionTweets(screenName,mPage, since_id,max_id,isUserTweet,new TextHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, final String res) {
@@ -362,6 +369,6 @@ public class MentionTab extends Fragment implements TweetAdapter.OnItemClickList
             mTweetAdapter.setOnItemClickListener(MentionTab.this);
         }
         if(mTweetAdapter == null || mTweetAdapter.getItemCount() == 0)
-            fetchMentionTweets(false);
+            fetchMentionTweets(false, isUserTweet);
     }
 }

@@ -70,9 +70,13 @@ public class TwitterClient extends OAuthBaseClient {
 		client.post(url,params,handler);
 	}
 
-	public void getMentionTweets(int page,long sinceId, long maxId, AsyncHttpResponseHandler handler) {
+	public void getMentionTweets(String screenName, int page, long sinceId, long maxId, boolean isUserTweet, AsyncHttpResponseHandler handler) {
+		if(isUserTweet){
+			getUserTimeLine(screenName,handler);
+			return;
+		}
 		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
-		Log.d(Constants.TAG,"URL == " + apiUrl);
+		Log.d(Constants.TAG,"URL for mentioned tweet == " + apiUrl);
 		RequestParams params = new RequestParams();
 		if(sinceId != -1){
 			params.put("since_id", String.valueOf(sinceId));
@@ -119,6 +123,14 @@ public class TwitterClient extends OAuthBaseClient {
 
 	public void getFollowersList(String screenName,AsyncHttpResponseHandler handler) {
 		String url = getApiUrl("followers/list.json");
+		RequestParams params = new RequestParams();
+		params.put("screen_name", screenName);
+		client.get(url,params,handler);
+	}
+
+	public void getUserTimeLine(String screenName,AsyncHttpResponseHandler handler) {
+		String url = getApiUrl("statuses/user_timeline.json");
+		Log.d(Constants.TAG,"URL for user timeline  == " + url + ", handle == " + screenName);
 		RequestParams params = new RequestParams();
 		params.put("screen_name", screenName);
 		client.get(url,params,handler);
